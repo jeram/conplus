@@ -7,7 +7,11 @@
 
 require('./bootstrap');
 
+
 window.Vue = require('vue');
+
+import VueRouter from 'vue-router';
+window.Vue.use(VueRouter);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
