@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProjectPaymentDepositsTable extends Migration
+class CreateProjectDepositsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateProjectPaymentDepositsTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_payment_deposits', function (Blueprint $table) {
+        Schema::create('project_deposits', function (Blueprint $table) {
             $table->increments('id');
 			$table->integer('project_id')->unsigned();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
@@ -34,6 +34,6 @@ class CreateProjectPaymentDepositsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_payment_deposits');
+        Schema::dropIfExists('project_deposits');
     }
 }
