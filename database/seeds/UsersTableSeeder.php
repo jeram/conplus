@@ -1,6 +1,6 @@
 <?php
 
-use App\User;
+use App\Models\User;
 use jeremykenedy\LaravelRoles\Models\Role;
 use jeremykenedy\LaravelRoles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
     {
 
 
-        $userRole 			= Role::where('name', '=', 'User')->first();
+        $developerRole 		= Role::where('name', '=', 'Developer')->first();
         $adminRole 			= Role::where('name', '=', 'Admin')->first();
 		$permissions 		= Permission::all();
 
@@ -25,31 +25,33 @@ class UsersTableSeeder extends Seeder
 	     * Add Users
 	     *
 	     */
-        if (User::where('email', '=', 'admin@admin.com')->first() === null) {
+        if (User::where('email', '=', 'developer@developer.com')->first() === null) {
 
 	        $newUser = User::create([
-	            'name' => 'Admin',
-	            'email' => 'admin@admin.com',
-	            'password' => bcrypt('password'),
+	            'name' => 'Developer',
+	            'email' => 'developer@developer.com',
+	            'password' => bcrypt('conplusdeveloper'),
 	        ]);
 
-	        $newUser->attachRole($adminRole);
+	        $newUser->attachRole($developerRole);
 			foreach ($permissions as $permission) {
 				$newUser->attachPermission($permission);
 			}
 
         }
 
-        if (User::where('email', '=', 'user@user.com')->first() === null) {
+        if (User::where('email', '=', 'admin@admin.com')->first() === null) {
 
 	        $newUser = User::create([
-	            'name' => 'User',
-	            'email' => 'user@user.com',
-	            'password' => bcrypt('password'),
+	            'name' => 'Admin',
+	            'email' => 'admin@admin.com',
+	            'password' => bcrypt('conplusadmin'),
 	        ]);
-
-	        $newUser;
-	        $newUser->attachRole($userRole);
+	        
+	        $newUser->attachRole($adminRole);
+			foreach ($permissions as $permission) {
+				$newUser->attachPermission($permission);
+			}
 
         }
 

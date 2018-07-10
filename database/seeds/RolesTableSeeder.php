@@ -1,6 +1,6 @@
 <?php
 
-use App\User;
+use App\Models\User;
 use jeremykenedy\LaravelRoles\Models\Role;
 use jeremykenedy\LaravelRoles\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +19,16 @@ class RolesTableSeeder extends Seeder
 	     * Add Roles
 	     *
 	     */
+		 
+		if (Role::where('name', '=', 'Developer')->first() === null) {
+	        $userRole = Role::create([
+	            'name' => 'Developer',
+	            'slug' => 'developer',
+	            'description' => 'Developer Role',
+	            'level' => 10,
+	        ]);
+	    }
+		
     	if (Role::where('name', '=', 'Admin')->first() === null) {
 	        $adminRole = Role::create([
 	            'name' => 'Admin',
@@ -34,15 +44,6 @@ class RolesTableSeeder extends Seeder
 	            'slug' => 'user',
 	            'description' => 'User Role',
 	            'level' => 1,
-	        ]);
-	    }
-
-    	if (Role::where('name', '=', 'Unverified')->first() === null) {
-	        $userRole = Role::create([
-	            'name' => 'Unverified',
-	            'slug' => 'unverified',
-	            'description' => 'Unverified Role',
-	            'level' => 0,
 	        ]);
 	    }
 

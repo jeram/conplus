@@ -15,6 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/usercheck', 'UserController@index');
+
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+#For admin, user logged in
+Route::group(['middleware' => 'role:admin,user'], function () {
+    Route::get('/', 'UserController@home');
+	
+});
+
+

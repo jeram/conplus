@@ -29,4 +29,20 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+	
+	public function companies() {
+		
+        return $this->belongsToMany('App\Models\Company','user_to_companies');
+		
+    }
+	
+	/**
+	 * Roll API Key
+	 */
+	public function rollApiKey() {
+	   do {
+		  $this->api_token = str_random(60);
+	   } while ($this->where('api_token', $this->api_token)->exists());
+	   $this->save();
+	}
 }

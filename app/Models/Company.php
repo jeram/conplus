@@ -39,7 +39,7 @@ class Company extends Model
 	
 	public function users() {
 		
-        return $this->hasMany('App\Models\User','user_to_companies','company_id','user_id');
+		return $this->belongsToMany('App\Models\Company','user_to_companies');
 		
     }
 	
