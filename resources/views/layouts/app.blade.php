@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ asset('user/css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('app/css/app.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -72,6 +72,6 @@
     </div>
 	
 	<!-- Scripts -->
-	<script src="{{ asset('user/js/app.js') }}"></script>
+	<script src="{{ asset('app/js/app.js') }}"></script>
 </body>
 </html>

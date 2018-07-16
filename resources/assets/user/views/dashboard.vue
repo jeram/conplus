@@ -3,7 +3,7 @@
         <div class="padding pb-0">
             dashboard
         </div>
-
+		<!--
         <div class="padding">
             <div class="box effect8">
                 <div class="box-body">
@@ -18,7 +18,7 @@
                     
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -34,7 +34,7 @@
         },
 
         mounted() {
-			console.log(auth.user)
+			//console.log(auth.user)
         },
 
         beforeRouteEnter (to, from, next) {

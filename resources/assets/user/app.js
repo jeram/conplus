@@ -6,6 +6,9 @@
  */
 
 require('./bootstrap')
+//require('../../../public/AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js')
+require('../../../public/AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js')
+require('../../../public/AdminLTE-2.4.5/dist/js/adminlte.min.js')
 
 import router from './router'
 import auth from './auth'
