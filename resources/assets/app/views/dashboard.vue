@@ -34,6 +34,7 @@
         },
 
         mounted() {
+            console.log('asdasdasdasd')
 			console.log(auth.user)
         },
 

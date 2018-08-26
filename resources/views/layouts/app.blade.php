@@ -22,6 +22,13 @@
 </head>
 <body>
     <div id="app">
+        @if (session('notification'))
+            <notification type="{{ session('notificationType') }}" message="{{ session('notification') }}"></notification>
+        @elseif (session('status'))
+            <notification type="alert-primary" message="{{ session('status') }}"></notification>
+        @else
+            <notification></notification>
+        @endif
         <nav class="navbar navbar-expand-md navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -39,28 +46,6 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
                     </ul>
                 </div>
             </div>
@@ -72,6 +57,6 @@
     </div>
 	
 	<!-- Scripts -->
-	<script src="{{ asset('app/js/app.js') }}"></script>
+	<script src="{{ asset('user/js/app.js') }}"></script>
 </body>
 </html>

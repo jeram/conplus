@@ -11,18 +11,25 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('/usercheck', 'UserController@index');
 
-Auth::routes();
+
+Route::post('auth/login', 'Auth\LoginController@login');
+Route::post('/logout', 'Auth\LoginController@redirectLogout');
+
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::get('/', 'Auth\LoginController@showLoginForm');
+//Auth::routes();
 
 #For admin, user logged in
-Route::group(['middleware' => 'role:admin,user'], function () {
-    Route::get('/', 'UserController@home');
-	
+Route::group(['middleware' => 'auth'], function () {
+	Route::group(['middleware' => 'role:admin,user'], function () {
+	    Route::get('/', 'UserController@home');
+		
+	});
 });
 
-
+Route::get('/{vue_capture?}', function () {
+   return view('home');
+ })->where('vue_capture', '[\/\w\.-]*');

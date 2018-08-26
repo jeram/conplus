@@ -9,6 +9,7 @@ require('./bootstrap')
 
 import router from './router'
 import auth from './auth'
+import store from './store'
 
 window.Vue = require('vue');
 

@@ -11,4 +11,10 @@ class Material extends Model
         return $this->hasMany('App\Models\MaterialCategory');
 		
     }
+
+    public function unit() {
+		
+        return $this->belongsTo('App\Models\UnitOfMeasurement', 'unit_of_measurement_id');
+		
+    }
 }

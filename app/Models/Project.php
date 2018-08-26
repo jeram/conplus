@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
+	use SoftDeletes;
+
+	protected $dates = ['deleted_at'];
     
 	public function company() {
 		
@@ -22,6 +26,12 @@ class Project extends Model
 	public function details() {
 		
         return $this->hasOne('App\Models\ProjectDetail');
+		
+    }
+
+    public function status() {
+		
+        return $this->hasOne('App\Models\ProjectStatus');
 		
     }
 	

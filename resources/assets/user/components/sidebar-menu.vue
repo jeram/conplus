@@ -1,0 +1,91 @@
+<template>
+    <ul class="sidebar-menu" data-widget="tree" v-if="this.$root.$data.user.authenticated">
+        <router-link :to="{ name: 'Dashboard' }" tag="li" exact-active-class="active">
+            <a>
+                <i class="fa fa-desktop"></i> <span>Dashboard</span>
+            </a>
+        </router-link>
+        <li v-if="current_project.id != 0">
+            <a href="#"><i class="fa fa-sticky-note-o"></i> <span>Notes</span></a>
+        </li>        
+        <li v-if="current_project.id != 0">
+            <a href="#"><i class="fa fa-calendar"></i> <span>Schedules</span></a>
+        </li>
+        <li v-if="current_project.id != 0">
+            <a href="#"><i class="fa fa-money"></i> <span>Deposits</span></a>
+        </li>
+        <li v-if="current_project.id != 0">
+            <a href="#"><i class="fa fa-share"></i> <span>Payments</span></a>
+        </li>
+        <router-link :to="{ name: 'Attachments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-folder-o"></i> <span>Attachments</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Project Materials' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-leaf"></i> <span>Project Materials</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Phases' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-tasks"></i> <span>Phases</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Project', params: { project_id: current_project.id }}" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-wrench"></i> <span>Project</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Company', params: { company_id: current_company.id }}" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-building-o"></i> <span>Company</span>
+            </a>
+        </router-link>
+        <!--
+        <li class="header">CONFIGURATION</li>
+        <router-link :to="{ name: 'Materials' }" tag="li" exact-active-class="active">
+            <a>
+                <i class="fa fa-leaf"></i> <span>Materials Management</span>
+            </a>
+        </router-link>
+        <li class="treeview">
+            <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+            </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="#">Link in level 2</a></li>
+                <li><a href="#">Link in level 2</a></li>
+            </ul>
+        </li>-->
+    </ul>
+</template>
+
+<script>
+    import auth from '../auth'
+    import { mapState, mapActions } from 'vuex'
+
+    export default {
+        computed: {
+            ...mapState({
+                current_project: state => state.current_project,
+                current_company: state => state.current_company
+            })
+        },
+        
+        data() {
+            return {
+                auth: auth
+            }
+        },
+        
+        created() {
+            
+        },
+
+        methods: {
+        }
+    }
+</script>

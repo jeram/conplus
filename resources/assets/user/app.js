@@ -9,22 +9,48 @@ require('./bootstrap')
 //require('../../../public/AdminLTE-2.4.5/bower_components/jquery/dist/jquery.min.js')
 require('../../../public/AdminLTE-2.4.5/bower_components/bootstrap/dist/js/bootstrap.min.js')
 require('../../../public/AdminLTE-2.4.5/dist/js/adminlte.min.js')
+require('../../../public/AdminLTE-2.4.5/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')
+require('../../../public/AdminLTE-2.4.5/plugins/bootstrap-slider/bootstrap-slider.js')
+require('../../../public/AdminLTE-2.4.5/bower_components/datatables.net/js/jquery.dataTables.min.js')
+require('../jQuery-JSON-TagEditor/jquery.json-tag-editor.min.js')
+require('../jQuery-JSON-TagEditor/jquery.caret.min.js')
+require('./custom.js')
 
 import router from './router'
 import auth from './auth'
+import store from './store'
+import {mapActions, mapState} from 'vuex'
+import vSelect from 'vue-select'
+import uploader from 'vue-simple-uploader'
 
-window.Vue = require('vue');
+window.Vue = require('vue')
 
-import VueRouter from 'vue-router';
-window.Vue.use(VueRouter);
+import VueRouter from 'vue-router'
+window.Vue.use(VueRouter)
+
+Vue.use(uploader)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
-//Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('v-select', vSelect)
+Vue.component('notification', require('./components/notification.vue'));
+Vue.component('company-project-switcher', require('./components/company-project-switcher.vue'));
+Vue.component('sidebar-menu', require('./components/sidebar-menu.vue'));
+Vue.component('modal', require('./components/modal.vue'));
+Vue.component('login', require('./components/login.vue'));
+Vue.component('company-form', require('./components/company-form.vue'));
+Vue.component('status-and-types', require('./components/status-and-types.vue'));
+Vue.component('json-tag-editor', require('./components/json-tag-editor.vue'));
+Vue.component('datepicker', require('./components/datepicker.vue'));
+Vue.component('slider', require('./components/slider.vue'));
+Vue.component('materials-management', require('./components/materials-management.vue'));
+Vue.component('materials-crud', require('./components/materials-crud.vue'));
+Vue.component('material-categories-crud', require('./components/material-categories-crud.vue'));
+Vue.component('pagination', require('./components/pagination.vue'));
+Vue.component('project-materials-crud', require('./components/project-materials-crud.vue'));
 
 const app = new Vue({
     
@@ -32,13 +58,33 @@ const app = new Vue({
         user: auth.user
     },
 	computed: {
-        
+        ...mapState(['current_company'])
     },
     methods: {
-
+        getProjects: function () {
+            let self = this
+            self.loading = true
+            axios.get('/api/company/' + this.current_company.id + '/project', {
+                mode: 'no-cors',
+            }).then(function (res) {
+                // console.log(JSON.stringify(res.data))
+                self.setProjects(res.data)
+                self.loading = false
+            }).catch(function (err) {
+                console.log(err)
+                self.loading = false
+            })
+        },
+        
+        ...mapActions(['setCampaigns'])
     },
 	el: '#app',
 	router,
-	
+	store,
+    watch: {
+        'current_company': function (newVal, oldVal) {
+            //this.getProjects();
+        }
+    }
 });
 

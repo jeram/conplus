@@ -23,4 +23,7 @@ class UserController extends Controller
         ], 401);
 		
 	}
+    public function getCompanies() {
+        return Auth::user()->companies()->with('projects')->get();
+    }
 }

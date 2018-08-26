@@ -17,8 +17,45 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'], function () {
-	
-	Route::get('user', 'UserController@index');
+Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'], function () {	
+	Route::get('company', 'UserController@getCompanies');
+    Route::get('user', 'UserController@index');
+    
+    Route::group(['prefix' => 'company'], function () {
+        
+        Route::group(['prefix' => '{company_id}'], function () {
+
+            Route::resource('/', 'CompanyController');
+
+            Route::apiResources([
+                'project' => 'ProjectController',
+                'project_status' => 'ProjectStatusController',
+                'project_type' => 'ProjectTypeController',
+                'project_note_status' => 'ProjectNoteStatusController',
+                'project_material_status' => 'ProjectMaterialStatusController',
+                'payment_type' => 'PaymentTypeController',
+                'deposit_type' => 'DepositTypeController',
+                'materials' => 'MaterialController',                
+                'unit_of_measurement' => 'UnitOfMeasurementController',
+            ]);
+
+            Route::group(['prefix' => 'project'], function () {
+        
+                Route::group(['prefix' => '{project_id}'], function () {
+
+                    Route::apiResources([
+
+                        'phase' => 'ProjectPhaseController',
+                        'project_material' => 'ProjectMaterialController',
+                        
+                    ]);
+
+                });
+
+            });
+
+        });
+        
+    });
     
 });

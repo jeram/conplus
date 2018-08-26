@@ -24,9 +24,28 @@ export default {
 			})
 			
     },
+    
+    login(email, password, remember_me) {
+        return axios.post('/auth/login', {
+            email: email,
+            password: password,
+            remember_me: remember_me
+        })
+            .then((res) => {
+                // success
+                localStorage.setItem('api_token', res.data.meta.token)
+                window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('api_token')
+
+                return Promise.resolve(res)
+            })
+            .catch((err) => {
+                // error
+                return Promise.reject(err)
+            })
+    },
 
     resetPass(email, password, password_confirmation, token) {
-        return axios.post('/dashboard/reset', {
+        return axios.post('/auth/reset', {
             email: email,
             password: password,
             password_confirmation: password_confirmation,

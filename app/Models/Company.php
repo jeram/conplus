@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
+	use SoftDeletes;
+
+	protected $dates = ['deleted_at'];
 	
-    public function deposit_type() {
+    public function deposit_types() {
 		
-        return $this->hasOne('App\Models\CompanyDepositType');
+        return $this->hasMany('App\Models\CompanyDepositType');
 		
     }
 	
@@ -19,9 +23,9 @@ class Company extends Model
 		
     }
 	
-	public function payment_type() {
+	public function payment_types() {
 		
-        return $this->hasOne('App\Models\CompanyPaymentType');
+        return $this->hasMany('App\Models\CompanyPaymentType');
 		
     }
 	
@@ -46,6 +50,36 @@ class Company extends Model
 	public function customers() {
 		
         return $this->hasMany('App\Models\Customer');
+		
+    }
+
+    public function project_statuses() {
+		
+        return $this->hasMany('App\Models\ProjectStatus');
+		
+    }
+
+    public function project_types() {
+		
+        return $this->hasMany('App\Models\ProjectType');
+		
+    }
+
+    public function project_note_statuses() {
+		
+        return $this->hasMany('App\Models\ProjectNoteStatus');
+		
+    }
+
+    public function project_material_statuses() {
+		
+        return $this->hasMany('App\Models\ProjectMaterialStatus');
+		
+    }
+
+    public function units() {
+		
+        return $this->hasMany('App\Models\UnitOfMeasurement');
 		
     }
 	

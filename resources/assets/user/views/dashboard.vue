@@ -32,9 +32,13 @@
                 auth: auth
             }
         },
+        
+        computed: {
+            
+        },
 
         mounted() {
-			//console.log(auth.user)
+			 
         },
 
         beforeRouteEnter (to, from, next) {
