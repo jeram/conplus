@@ -31,6 +31,11 @@ let routes = [
         path: '/attachments',
         component: require('../views/attachments'),
     },
+    {
+        name: 'Payments',
+        path: '/payments',
+        component: require('../views/payments'),
+    },
     /*
     {
         name: 'Materials Management',

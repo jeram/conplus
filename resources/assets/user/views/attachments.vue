@@ -3,36 +3,40 @@
         <div class="padding pb-0">
             Attachments
 
-            <uploader :options="options" class="uploader-example">
-            <uploader-unsupport></uploader-unsupport>
-            <uploader-drop>
-              <p>Drop files here to upload or</p>
-              <uploader-btn>select files</uploader-btn>
-              <uploader-btn :attrs="attrs">select images</uploader-btn>
-              <uploader-btn :directory="true">select folder</uploader-btn>
-            </uploader-drop>
-            <uploader-list></uploader-list>
-          </uploader>
+            <div class="large-12 medium-12 small-12 cell">
+              <label>Files
+                <input type="file" id="files" ref="files" multiple v-on:change="handleFilesUpload()"/>
+              </label>
+            </div>
+            <div class="large-12 medium-12 small-12 cell">
+              <div v-for="(file, key) in files" class="file-listing">{{ file.name }} <span class="remove-file" v-on:click="removeFile( key )">Remove</span></div>
+            </div>
+            <br>
+            <div class="large-12 medium-12 small-12 cell">
+              <button v-on:click="addFiles()">Add Files</button>
+            </div>
+            <br>
+            <div class="large-12 medium-12 small-12 cell">
+              <button v-on:click="submitFiles()">Submit</button>
+            </div>
         </div>
     </div>
 </template>
 
 <style>
-  .uploader-example {
-    width: 880px;
-    padding: 15px;
-    margin: 40px auto 0;
-    font-size: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+  input[type="file"]{
+    position: absolute;
+    top: -500px;
   }
-  .uploader-example .uploader-btn {
-    margin-right: 4px;
+
+  div.file-listing{
+    width: 200px;
   }
-  .uploader-example .uploader-list {
-    max-height: 440px;
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
+
+  span.remove-file{
+    color: red;
+    cursor: pointer;
+    float: right;
   }
 </style>
 
@@ -44,14 +48,7 @@
         data() {
             return {
                 auth: auth,
-                options: {
-                  // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-                  target: '//localhost:3000/upload',
-                  testChunks: false
-                },
-                attrs: {
-                  accept: 'image/*'
-                }
+                files: []
             }
         },
         
@@ -62,6 +59,73 @@
         mounted() {
 			 
         },
+
+        methods: {
+        /*
+          Adds a file
+        */
+        addFiles(){
+          this.$refs.files.click();
+        },
+
+        /*
+          Submits files to the server
+        */
+        submitFiles(){
+          /*
+            Initialize the form data
+          */
+          let formData = new FormData();
+
+          /*
+            Iteate over any file sent over appending the files
+            to the form data.
+          */
+          for( var i = 0; i < this.files.length; i++ ){
+            let file = this.files[i];
+
+            formData.append('files[' + i + ']', file);
+          }
+
+          /*
+            Make the request to the POST /select-files URL
+          */
+          axios.post( '/select-files',
+            formData,
+            {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+            }
+          ).then(function(){
+            console.log('SUCCESS!!');
+          })
+          .catch(function(){
+            console.log('FAILURE!!');
+          });
+        },
+
+        /*
+          Handles the uploading of files
+        */
+        handleFilesUpload(){
+          let uploadedFiles = this.$refs.files.files;
+
+          /*
+            Adds the uploaded file to the files array
+          */
+          for( var i = 0; i < uploadedFiles.length; i++ ){
+            this.files.push( uploadedFiles[i] );
+          }
+        },
+
+        /*
+          Removes a select file the user has uploaded
+        */
+        removeFile( key ){
+          this.files.splice( key, 1 );
+        }
+      },
 
         beforeRouteEnter (to, from, next) {
             auth.check()

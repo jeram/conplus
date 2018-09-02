@@ -14,14 +14,16 @@
         <li v-if="current_project.id != 0">
             <a href="#"><i class="fa fa-money"></i> <span>Deposits</span></a>
         </li>
-        <li v-if="current_project.id != 0">
-            <a href="#"><i class="fa fa-share"></i> <span>Payments</span></a>
-        </li>
-        <router-link :to="{ name: 'Attachments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link :to="{ name: 'Payments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-folder-o"></i> <span>Payments</span>
+            </a>
+        </router-link>
+        <!--<router-link :to="{ name: 'Attachments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
             <a>
                 <i class="fa fa-folder-o"></i> <span>Attachments</span>
             </a>
-        </router-link>
+        </router-link>-->
         <router-link :to="{ name: 'Project Materials' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
             <a>
                 <i class="fa fa-leaf"></i> <span>Project Materials</span>

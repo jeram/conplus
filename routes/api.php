@@ -47,6 +47,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'],
 
                         'phase' => 'ProjectPhaseController',
                         'project_material' => 'ProjectMaterialController',
+                        'payment' => 'ProjectPaymentController',
                         
                     ]);
 
