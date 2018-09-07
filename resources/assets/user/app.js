@@ -51,6 +51,37 @@ Vue.component('materials-crud', require('./components/materials-crud.vue'));
 Vue.component('material-categories-crud', require('./components/material-categories-crud.vue'));
 Vue.component('pagination', require('./components/pagination.vue'));
 Vue.component('project-materials-crud', require('./components/project-materials-crud.vue'));
+Vue.component('payments-crud', require('./components/payments-crud.vue'));
+Vue.component('deposits-crud', require('./components/deposits-crud.vue'));
+Vue.component('users-management', require('./components/users-management.vue'));
+Vue.component('users-crud', require('./components/users-crud.vue'));
+Vue.component('projects-crud', require('./components/projects-crud.vue'));
+Vue.component('project-form', require('./components/project-form.vue'));
+
+Vue.filter('toCurrency', function (value) {
+    return parseFloat(value).toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
+    //if (typeof value !== "number") {
+    //    return value;
+    //}
+    /*var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency', 
+        currency: 'PHP',
+        minimumFractionDigits: 0
+    });
+    return formatter.format(value);*/
+});
+
+Vue.filter('toHumanDate', function (value) {
+    return moment(value).format('MMM D, YYYY')
+});
+
+Vue.filter('truncate', function (value, limit) {
+    if (value.length > limit) {
+        return value.substring(0, limit) + '...'
+    }
+    return value
+})
+
 
 const app = new Vue({
     

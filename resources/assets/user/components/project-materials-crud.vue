@@ -65,10 +65,10 @@
                             </td>
                         </tr>
                         <tr v-if="records.length <= 0 && !loading">
-                            <td colspan="3"><em>No Record Found</em></td>
+                            <td colspan="6"><em>No Record Found</em></td>
                         </tr>
                         <tr v-if="loading">
-                            <td colspan="3"><i class="fa fa-circle-o-notch fa-spin"></i></td>
+                            <td colspan="6"><i class="fa fa-circle-o-notch fa-spin"></i></td>
                         </tr>
                     </tbody>
                 </table>

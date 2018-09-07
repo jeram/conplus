@@ -80,8 +80,9 @@ class ProjectPhaseController extends AuthController
      * @param  \App\Models\ProjectPhase  $phase
      * @return \Illuminate\Http\Response
      */
-    public function update(PatchRequest $request, ProjectPhase $phase)
+    public function update(PatchRequest $request, $company_id, $project_id, $phase_id)
     {
+        $phase = ProjectPhase::find($phase_id);
         $phase->label = $request->get('label');
         $phase->total_cost_estimation = $request->get('total_cost_estimation');
 
@@ -106,9 +107,9 @@ class ProjectPhaseController extends AuthController
      * @param  \App\Models\ProjectPhase  $phase
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ProjectPhase $phase)
+    public function destroy($company_id, $project_id, $phase_id)
     {
-        $phase->delete();
+        ProjectPhase::find($phase_id)->delete();
 
         return response()->json([], 202);
     }

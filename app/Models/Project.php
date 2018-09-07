@@ -52,6 +52,12 @@ class Project extends Model
         return $this->hasMany('App\Models\ProjectPayment');
 		
     }
+
+    public function deposits() {
+		
+        return $this->hasMany('App\Models\ProjectDeposit');
+		
+    }
 	
 	public function phases() {
 		

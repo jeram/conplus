@@ -24,7 +24,6 @@
                     <thead>
                         <tr>
                             <th>Amount</th>
-                            <th>Check Number</th>
                             <th>Date</th>
                             <th>Notes</th>
                             <th>Status</th>
@@ -34,7 +33,6 @@
                     <tbody>
                         <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
                             <td>{{record.amount | toCurrency}}</td>
-                            <td>{{record.check_number}}</td>
                             <td>{{record.payment_date}}</td>
                             <td>{{record.notes}}</td>
                             <td>
@@ -65,8 +63,8 @@
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Payment</span>
-            <span slot="header" v-else>Edit: Payment Info}</span>
+            <span slot="header" v-if="current_record.id == 0">New Deposit</span>
+            <span slot="header" v-else>Edit: Deposit Info}</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
@@ -76,12 +74,7 @@
                             <span class="text-danger">{{ errors.first('amount') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Check Number</label>
-                            <input type="text" v-validate="''" v-model="current_record.check_number" class="form-control">
-                            <span class="text-danger">{{ errors.first('check_number') }}</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="label">Payment Date</label>
+                            <label for="label">Deposit Date</label>
                             <datepicker v-model="current_record.payment_date" class="form-control"></datepicker>
                         </div>
                         <div class="form-group">
@@ -90,8 +83,8 @@
                         </div>
                         <div class="form-group">
                             <label for="label">Status</label>
-                            <select v-model="current_record.company_payment_type_id" class="form-control">
-                                <option v-for="type in payment_types" :value="type.id">{{type.label}}</option>
+                            <select v-model="current_record.company_deposit_type_id" class="form-control">
+                                <option v-for="type in deposit_types" :value="type.id">{{type.label}}</option>
                             </select>
                         </div>
                     </div>
@@ -128,14 +121,14 @@
                     'current_page': 1
                 },
                 records: [],
-                payment_types: [],
+                deposit_types: [],
                 current_record: null,
                 total_amount: 0,
             }
         },
 
         mounted() {
-            this.getPaymentTypes()
+            this.getDepositTypes()
             this.getRecords()
             this.resetCurrentRecord()
         },
@@ -143,7 +136,7 @@
         methods: {
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment', {
+                axios.get('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/deposit', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
@@ -162,10 +155,10 @@
                     })
             },
 
-            getPaymentTypes() {
-                return axios.get('/api/company/' + this.current_company.id + '/payment_type')
+            getDepositTypes() {
+                return axios.get('/api/company/' + this.current_company.id + '/deposit_type')
                             .then(res => {
-                                this.payment_types = res.data
+                                this.deposit_types = res.data
                             })
                             .catch(function (err) {
 
@@ -209,10 +202,7 @@
 
                         if (this.current_record.id > 0) { // edit
 
-                            this.current_record.material_id = this.current_record.material.value
-                            this.current_record.label = this.current_record.material.label
-
-                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + this.current_record.id, this.current_record)
+                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/deposit/' + this.current_record.id, this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
@@ -226,7 +216,7 @@
                                 this.loading_btn = false
                             })
                         } else { // add
-                            return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment', this.current_record)
+                            return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/deposit', this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
@@ -253,7 +243,7 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/deposit/' + object.id)
                     .then(res => {
                         this.getRecords()
                         this.resetCurrentRecord()
@@ -267,9 +257,8 @@
                 this.current_record = {
                     id: 0,
                     amount: '',
-                    check_number: '',
                     payment_date: moment().format('MMM D, YYYY'),
-                    company_payment_type_id: 0,
+                    company_deposit_type_id: 0,
                     notes: '',
                 }
             },

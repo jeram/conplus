@@ -13,7 +13,7 @@
             $(this.$el).datepicker({
                 autoclose: true,
             }).on('changeDate', function(e) {
-                self.$emit('input', e.format(0,"mm/dd/yyyy"))
+                self.$emit('input', e.format(0,"M d, yyyy"))
             });
         },
     }

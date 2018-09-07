@@ -17,6 +17,9 @@
                         <li :class="{ active: active_tab === 'materials_management' }">
                             <a href="#materials_management" data-toggle="tab" @click="active_tab = 'materials_management'">Materials Management</a>
                         </li>
+                        <li :class="{ active: active_tab === 'users' }">
+                            <a href="#users" data-toggle="tab" @click="active_tab = 'users'">Users</a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane" :class="{ active: active_tab === 'company' }" id="company">
@@ -27,6 +30,9 @@
                         </div>
                         <div class="tab-pane" :class="{ active: active_tab === 'materials_management' }" id="materials_management">
                             <materials-management></materials-management>
+                        </div>
+                        <div class="tab-pane" :class="{ active: active_tab === 'users' }" id="users">
+                            <users-management></users-management>
                         </div>
                     </div>
                 </div>          

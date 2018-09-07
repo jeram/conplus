@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'], function () {	
 	Route::get('company', 'UserController@getCompanies');
-    Route::get('user', 'UserController@index');
+    Route::get('user', 'UserController@auth');
     
     Route::group(['prefix' => 'company'], function () {
         
@@ -35,8 +35,10 @@ Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'],
                 'project_material_status' => 'ProjectMaterialStatusController',
                 'payment_type' => 'PaymentTypeController',
                 'deposit_type' => 'DepositTypeController',
-                'materials' => 'MaterialController',                
+                'materials' => 'MaterialController',
                 'unit_of_measurement' => 'UnitOfMeasurementController',
+                'user' => 'UserController',
+                'permission' => 'UserPermissionController',
             ]);
 
             Route::group(['prefix' => 'project'], function () {
@@ -48,6 +50,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'],
                         'phase' => 'ProjectPhaseController',
                         'project_material' => 'ProjectMaterialController',
                         'payment' => 'ProjectPaymentController',
+                        'deposit' => 'ProjectDepositController',
                         
                     ]);
 

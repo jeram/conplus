@@ -16,7 +16,7 @@ class ProjectPhase extends Model
         if (!$value) {
             return;
         }
-    	$date = \DateTime::createFromFormat('m/d/Y', $value);
+    	$date = \DateTime::createFromFormat('M j, Y', $value);
         $this->attributes['start_date'] = $date->format('Y-m-d');
     }
 
@@ -24,7 +24,7 @@ class ProjectPhase extends Model
         if (!$value) {
             return;
         }
-    	$date = \DateTime::createFromFormat('m/d/Y', $value);
+    	$date = \DateTime::createFromFormat('M j, Y', $value);
         $this->attributes['finish_date'] = $date->format('Y-m-d');
     }
 

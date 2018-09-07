@@ -23,24 +23,25 @@
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Amount</th>
-                            <th>Check Number</th>
+                            <th>Name</th>
+                            <th>Cost</th>
                             <th>Date</th>
-                            <th>Notes</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
-                            <td>{{record.amount | toCurrency}}</td>
-                            <td>{{record.check_number}}</td>
-                            <td>{{record.payment_date}}</td>
-                            <td>{{record.notes}}</td>
+                            <td>{{record.name}}</td>
+                            <td>{{record.cost | toCurrency}}</td>                            
+                            <td>{{record.created_at | toHumanDate}}</td>
                             <td>
-                                <span v-if="record.type.label=='Paid'" class="label label-default">{{record.type.label}}</span>
-                                <span v-else-if="record.type.label=='Pending'" class="label label-info">{{record.type.label}}</span>
-                                <span v-else class="label label-success">{{record.type.label}}</span>
+                                <span class="label label-success" v-if="record.is_active">
+                                    Active
+                                </span>
+                                <span class="label label-default" v-else>
+                                    Inactive
+                                </span>
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
@@ -48,50 +49,37 @@
                             </td>
                         </tr>
                         <tr v-if="records.length <= 0 && !loading">
-                            <td colspan="6"><em>No Record Found</em></td>
+                            <td colspan="5"><em>No Record Found</em></td>
                         </tr>
                         <tr v-if="loading">
-                            <td colspan="6"><i class="fa fa-circle-o-notch fa-spin"></i></td>
+                            <td colspan="5"><i class="fa fa-circle-o-notch fa-spin"></i></td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="row" v-if="total_amount > 0">
-                    <div class="col-md-12 text-right">
-                        <em>Total selected: {{total_amount | toCurrency}}</em>
-                    </div>
-                </div>
                 <pagination v-if="pagination.last_page > 1" :pagination="pagination" :offset="5" @paginate="getRecords()"></pagination>
             </div>
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Payment</span>
-            <span slot="header" v-else>Edit: Payment Info}</span>
+            <span slot="header" v-if="current_record.id == 0">New Project</span>
+            <span slot="header" v-else>Edit: Project</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="label">Amount</label>
-                            <input type="number" v-validate="'required'" v-model="current_record.amount" class="form-control" min="0" step="any">
-                            <span class="text-danger">{{ errors.first('amount') }}</span>
+                            <label for="label">Name</label>
+                            <input type="text" v-validate="'required'" v-model="current_record.name" class="form-control">
+                            <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Check Number</label>
-                            <input type="text" v-validate="''" v-model="current_record.check_number" class="form-control">
-                            <span class="text-danger">{{ errors.first('check_number') }}</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="label">Payment Date</label>
-                            <datepicker v-model="current_record.payment_date" class="form-control"></datepicker>
-                        </div>
-                        <div class="form-group">
-                            <label for="label">Notes</label>
-                            <textarea v-model="current_record.notes" class="form-control"></textarea>
+                            <label for="label">Cost</label>
+                            <input type="number" v-validate="'required'" v-model="current_record.cost" class="form-control" min="0" step="any">
+                            <span class="text-danger">{{ errors.first('cost') }}</span>
                         </div>
                         <div class="form-group">
                             <label for="label">Status</label>
-                            <select v-model="current_record.company_payment_type_id" class="form-control">
-                                <option v-for="type in payment_types" :value="type.id">{{type.label}}</option>
+                            <select v-model="current_record.is_active" class="form-control">
+                                <option v-for="status in statuses" :value="status.id">{{status.label}}</option>
                             </select>
                         </div>
                     </div>
@@ -112,7 +100,8 @@
         computed: {
             ...mapState({
                 current_project: state => state.current_project,
-                current_company: state => state.current_company
+                current_company: state => state.current_company,
+                projects: state => state.projects,
             })
         },
 
@@ -128,14 +117,21 @@
                     'current_page': 1
                 },
                 records: [],
-                payment_types: [],
+                statuses: [
+                            {
+                                'id': 1,
+                                'label': 'Active',
+                            },
+                            {
+                                'id': 0,
+                                'label': 'Inactive',
+                            },
+                        ],
                 current_record: null,
-                total_amount: 0,
             }
         },
 
         mounted() {
-            this.getPaymentTypes()
             this.getRecords()
             this.resetCurrentRecord()
         },
@@ -143,12 +139,11 @@
         methods: {
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment', {
+                axios.get('/api/company/' + this.current_company.id + '/project', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
                             page: this.pagination.current_page,
-                            project_phase_id: this.project_phase_id,
                         }
                     })
                     .then(res => {
@@ -162,31 +157,12 @@
                     })
             },
 
-            getPaymentTypes() {
-                return axios.get('/api/company/' + this.current_company.id + '/payment_type')
-                            .then(res => {
-                                this.payment_types = res.data
-                            })
-                            .catch(function (err) {
-
-                            })
-            },
-
             showForm(object) {
                 if (object == 'add_record') {
                     this.resetCurrentRecord()
                 } else {
-                    object.material = {
-                        value: this.current_record.material_id,
-                        label: this.current_record.label,
-                    }
 
                     this.current_record = object
-
-                    this.current_record.material = {
-                        value: this.current_record.material_id,
-                        label: this.current_record.label,
-                    }
                 }
                 this.show_form = true
             },
@@ -209,15 +185,27 @@
 
                         if (this.current_record.id > 0) { // edit
 
-                            this.current_record.material_id = this.current_record.material.value
-                            this.current_record.label = this.current_record.material.label
-
-                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + this.current_record.id, this.current_record)
+                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_record.id, this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
 
                                 this.hideForm()
+
+                                if (!this.current_record.is_active) {
+                                    this.deleteProject(this.current_record)
+                                } else {
+                                    let project = null
+
+                                    // check if project is already in the list of active projects
+                                    project = this.projects.find(o => o.id == this.current_record.id)
+
+                                    if (!project) {
+                                        this.newProject(this.current_record)
+                                    }
+                                }
+
+                                this.updateProject(this.current_record)
 
                                 this.resetCurrentRecord()
                             })
@@ -226,13 +214,13 @@
                                 this.loading_btn = false
                             })
                         } else { // add
-                            return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment', this.current_record)
+                            return axios.post('/api/company/' + this.current_company.id + '/project', this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
 
-                                if (this.current_record.id !== '0') {
-                                    this.hideForm()
+                                if (this.current_record.is_active) {
+                                    this.newProject(this.current_record)
                                 }
 
                                 this.resetCurrentRecord()
@@ -253,9 +241,10 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/project/' + object.id)
                     .then(res => {
                         this.getRecords()
+                        this.deleteProject(object)
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
@@ -266,11 +255,9 @@
             resetCurrentRecord() {
                 this.current_record = {
                     id: 0,
-                    amount: '',
-                    check_number: '',
-                    payment_date: moment().format('MMM D, YYYY'),
-                    company_payment_type_id: 0,
-                    notes: '',
+                    name: '',
+                    cost: '',
+                    is_active: 1,
                 }
             },
 
@@ -282,6 +269,8 @@
             onSearch(search) {
                 this.search(search, this)
             },
+
+            ...mapActions(['setCurrentProject', 'setProjects', 'newProject', 'updateProject', 'deleteProject'])
         },
 
         watch: {

@@ -1,22 +1,24 @@
 <template>
-    <ul class="sidebar-menu" data-widget="tree" v-if="this.$root.$data.user.authenticated">
+    <ul class="sidebar-menu" data-widget="tree">
         <router-link :to="{ name: 'Dashboard' }" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-desktop"></i> <span>Dashboard</span>
             </a>
         </router-link>
-        <li v-if="current_project.id != 0">
+        <!--<li v-if="current_project.id != 0">
             <a href="#"><i class="fa fa-sticky-note-o"></i> <span>Notes</span></a>
         </li>        
         <li v-if="current_project.id != 0">
             <a href="#"><i class="fa fa-calendar"></i> <span>Schedules</span></a>
-        </li>
-        <li v-if="current_project.id != 0">
-            <a href="#"><i class="fa fa-money"></i> <span>Deposits</span></a>
-        </li>
+        </li>-->
+        <router-link :to="{ name: 'Deposits' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+            <a>
+                <i class="fa fa-money"></i> <span>Deposits</span>
+            </a>
+        </router-link>
         <router-link :to="{ name: 'Payments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
             <a>
-                <i class="fa fa-folder-o"></i> <span>Payments</span>
+                <i class="fa fa-share"></i> <span>Payments</span>
             </a>
         </router-link>
         <!--<router-link :to="{ name: 'Attachments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
@@ -84,7 +86,7 @@
         },
         
         created() {
-            
+            console.log(this.current_project.id)
         },
 
         methods: {

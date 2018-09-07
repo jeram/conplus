@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use jeremykenedy\LaravelRoles\Traits\HasRoleAndPermission;
+use jeremykenedy\LaravelRoles\Models\Permission;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
@@ -38,6 +39,10 @@ class User extends Authenticatable
 		
         return $this->belongsToMany('App\Models\Company','user_to_companies');
 		
+    }
+
+    public function permissions() {
+        return $this->belongsToMany(Permission::class, 'permission_user');
     }
 	
 	/**

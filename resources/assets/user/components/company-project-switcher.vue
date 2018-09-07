@@ -4,7 +4,7 @@
             <div v-if="companies.length > 1">
                 <span style="color: #b8c7ce;">Select Company:</span>
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ current_company.name }}
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ current_company.name | truncate(50) }}
                     <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li v-for="company in companies"><a href="javascript:void(0)" @click="changeCompany(company)">{{ company.name }}</a></li>

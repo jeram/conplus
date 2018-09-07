@@ -2,6 +2,11 @@ import VueRouter from 'vue-router';
 
 let routes = [
     {
+        name: 'login',
+        path: '/login',
+        //component: require('../views/dashboard'),
+    },
+    {
         name: 'Dashboard',
         path: '/',
         component: require('../views/dashboard'),
@@ -35,6 +40,11 @@ let routes = [
         name: 'Payments',
         path: '/payments',
         component: require('../views/payments'),
+    },
+    {
+        name: 'Deposits',
+        path: '/deposits',
+        component: require('../views/deposits'),
     },
     /*
     {

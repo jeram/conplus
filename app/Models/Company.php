@@ -40,6 +40,12 @@ class Company extends Model
         return $this->hasMany('App\Models\Project');
 		
     }
+
+    public function active_projects() {
+		
+        return $this->hasMany('App\Models\Project')->where('projects.is_active', 1);
+		
+    }
 	
 	public function users() {
 		

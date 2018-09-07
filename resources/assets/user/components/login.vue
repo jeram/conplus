@@ -76,22 +76,21 @@
         },
 
         methods: {
-            login: function () {
-                let self = this
+            login() {
                 this.loading = true
                 auth.login(this.user.email, this.user.password, this.user.remember_me)
-                    .then((res) => {
+                    .then(res => {
                         showNotification(res.data.data.msg, 'alert-success')
                         
                         axios.get('/api/company')
-                            .then(function (res) {
+                            .then(res => {
                                 let current_company_id = localStorage.getItem('company_id')
                                 let current_project_id = localStorage.getItem('project_id')
                                 let companies = res.data
                                 let company = null
                                 let project = null
                                 if (current_company_id) {
-                                    if(companies.length > 1){
+                                    if(companies.length > 1) {
                                         company = companies.find(company => company.id == current_company_id)
                                         if (!company) {
                                             company = companies[0]
@@ -103,11 +102,11 @@
                                     company = companies[0]
                                 }
 
-                                let projects = company.projects
+                                let projects = company.active_projects
 
                                 if (current_project_id != 0) {
-                                    if(projects.length > 1){
-                                        project = projects.find(project => projects.id == current_project_id)
+                                    if(projects.length > 1) {
+                                        project = projects.find(project => project.id == current_project_id)
                                         if (!project) {
                                             project = projects[0]
                                         }
@@ -126,21 +125,21 @@
                                     
                                 }
                                 
-                                self.setCurrentCompany(company)
-                                self.setCurrentProject(project)
-                                self.setProjects(company.projects)
-                                //self.resetVuex()
+                                this.setCurrentCompany(company)
+                                this.setCurrentProject(project)
+                                this.setProjects(company.active_projects)
+                                //this.resetVuex()
                                 localStorage.setItem('company_id', company.id)
                                 localStorage.setItem('project_id', project.id)
                                 
                                 window.location.href = '/'
                             })
-                            .catch(function (err) {
+                            .catch(err => {
                                 console.log(err)
                                 showNotification(err.message, 'alert-danger')
                             })
                     })
-                    .catch((err) => {
+                    .catch(err => {
                         //this.loading = false
                         showNotification(err.message, 'alert-danger')
                     })
