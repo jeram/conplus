@@ -104,7 +104,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for="label">Quantity</label>
-                                    <input type="number" v-validate="'required'" v-model="current_record.quantity" class="form-control" @input="calculateTotalPrice" min="0" step="any">
+                                    <input type="number" v-validate="'required'" name="quantity" v-model="current_record.quantity" class="form-control" @input="calculateTotalPrice" min="0" step="any">
                                     <span class="text-danger">{{ errors.first('quantity') }}</span>
                                 </div>
                                 <div class="col-md-4">

@@ -17,4 +17,10 @@ class CompanyEquipment extends Model
         return $this->hasMany('App\Models\CompanyEquipmentHistory');
 		
     }
+
+    public function status() {
+		
+        return $this->hasOne('App\Models\CompanyEquipmentStatus', 'id', 'company_equipment_status_id');
+		
+    }
 }

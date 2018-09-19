@@ -46,6 +46,11 @@ let routes = [
         path: '/deposits',
         component: require('../views/deposits'),
     },
+    {
+        name: 'Equipments',
+        path: '/equipments',
+        component: require('../views/equipments'),
+    },
     /*
     {
         name: 'Materials Management',

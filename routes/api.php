@@ -37,8 +37,11 @@ Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'],
                 'deposit_type' => 'DepositTypeController',
                 'materials' => 'MaterialController',
                 'unit_of_measurement' => 'UnitOfMeasurementController',
+                'equipment_status' => 'CompanyEquipmentStatusController',
                 'user' => 'UserController',
                 'permission' => 'UserPermissionController',
+                'upload' => 'FileUploadController',
+                'equipment' => 'CompanyEquipmentController',
             ]);
 
             Route::group(['prefix' => 'project'], function () {
@@ -51,6 +54,20 @@ Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'],
                         'project_material' => 'ProjectMaterialController',
                         'payment' => 'ProjectPaymentController',
                         'deposit' => 'ProjectDepositController',
+                        
+                    ]);
+
+                });
+
+            });
+
+            Route::group(['prefix' => 'equipment'], function () {
+        
+                Route::group(['prefix' => '{equipment_id}'], function () {
+
+                    Route::apiResources([
+
+                        'history' => 'CompanyEquipmentHistoryController',
                         
                     ]);
 

@@ -1,131 +1,95 @@
 <template>
     <div class="app-body" id="view">
-        <div class="padding pb-0">
-            Attachments
+        <section class="content-header">
+            <h1>Attachments <small></small></h1>
+        </section>
 
-            <div class="large-12 medium-12 small-12 cell">
-              <label>Files
-                <input type="file" id="files" ref="files" multiple v-on:change="handleFilesUpload()"/>
-              </label>
+        <section class="content">
+           <div class="padding">
+                <vue-dropzone 
+                    ref="myVueDropzone" 
+                    id="dropzone" 
+                    @vdropzone-success="fileUploaded"
+                    @vdropzone-removed-file="removeFile"
+                    :options="dropzoneOptions"></vue-dropzone>
             </div>
-            <div class="large-12 medium-12 small-12 cell">
-              <div v-for="(file, key) in files" class="file-listing">{{ file.name }} <span class="remove-file" v-on:click="removeFile( key )">Remove</span></div>
-            </div>
-            <br>
-            <div class="large-12 medium-12 small-12 cell">
-              <button v-on:click="addFiles()">Add Files</button>
-            </div>
-            <br>
-            <div class="large-12 medium-12 small-12 cell">
-              <button v-on:click="submitFiles()">Submit</button>
-            </div>
-        </div>
+        </section>
     </div>
 </template>
 
 <style>
-  input[type="file"]{
-    position: absolute;
-    top: -500px;
-  }
-
-  div.file-listing{
-    width: 200px;
-  }
-
-  span.remove-file{
-    color: red;
-    cursor: pointer;
-    float: right;
-  }
+  
 </style>
+
 
 <script>
     import auth from '../auth'
+    import { mapState, mapActions } from 'vuex'
+    import vueDropzone from 'vue2-dropzone'
 
     export default {
+        components: {
+            vueDropzone
+        },
 
         data() {
             return {
                 auth: auth,
-                files: []
+                dropzoneOptions: {
+                    url: null,
+                    thumbnailWidth: 150,
+                    params: [],
+                    maxFiles: 1,
+                    acceptedFiles: 'image/*,application/pdf',
+                    addRemoveLinks: true,
+                    headers: { "Authorization": 'Bearer ' + localStorage.getItem('api_token') }
+                },
+                filename: null
             }
         },
         
         computed: {
-            
+            ...mapState({
+                current_project: state => state.current_project,
+                current_company: state => state.current_company
+            })
+        },
+
+        created() {
+            this.dropzoneOptions.url = '/api/company/' + this.current_company.id + '/upload'
+            this.dropzoneOptions.params = {
+                        'destination_path': 'files/company/' + this.current_company.id + '/project/' + this.current_project.id,
+                    }
         },
 
         mounted() {
-			 
+
         },
 
         methods: {
-        /*
-          Adds a file
-        */
-        addFiles(){
-          this.$refs.files.click();
-        },
+            fileUploaded(file, response) {
+                this.filename = response.filename
+            },
 
-        /*
-          Submits files to the server
-        */
-        submitFiles(){
-          /*
-            Initialize the form data
-          */
-          let formData = new FormData();
+            removeFile(file, error, xhr) {
+                let filename = file.name
+                if (!confirm('Are you sure you want to delete this file?')) {
+                    return false
+                }
 
-          /*
-            Iteate over any file sent over appending the files
-            to the form data.
-          */
-          for( var i = 0; i < this.files.length; i++ ){
-            let file = this.files[i];
-
-            formData.append('files[' + i + ']', file);
-          }
-
-          /*
-            Make the request to the POST /select-files URL
-          */
-          axios.post( '/select-files',
-            formData,
-            {
-              headers: {
-                  'Content-Type': 'multipart/form-data'
-              }
+                return axios.delete('/api/company/' + this.current_company.id + '/upload/' + this.filename, {
+                        data: {
+                            path: 'files/company/' + this.current_company.id + '/project/' + this.current_project.id
+                        }
+                    })
+                    .then(res => {
+                        
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             }
-          ).then(function(){
-            console.log('SUCCESS!!');
-          })
-          .catch(function(){
-            console.log('FAILURE!!');
-          });
         },
-
-        /*
-          Handles the uploading of files
-        */
-        handleFilesUpload(){
-          let uploadedFiles = this.$refs.files.files;
-
-          /*
-            Adds the uploaded file to the files array
-          */
-          for( var i = 0; i < uploadedFiles.length; i++ ){
-            this.files.push( uploadedFiles[i] );
-          }
-        },
-
-        /*
-          Removes a select file the user has uploaded
-        */
-        removeFile( key ){
-          this.files.splice( key, 1 );
-        }
-      },
 
         beforeRouteEnter (to, from, next) {
             auth.check()

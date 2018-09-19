@@ -60,7 +60,7 @@ class ProjectController extends AuthController
     	$project->name = $request->get('name');
     	$project->cost = $request->get('cost');
         $project->company_id = $company_id;
-    	$project->is_active = $request->get('is_active');
+    	$project->is_active = $request->get('is_active') ?? 1;
     	$project->save();
 
     	return response()->json($project, 200);

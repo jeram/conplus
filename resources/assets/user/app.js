@@ -14,6 +14,7 @@ require('../../../public/AdminLTE-2.4.5/plugins/bootstrap-slider/bootstrap-slide
 require('../../../public/AdminLTE-2.4.5/bower_components/datatables.net/js/jquery.dataTables.min.js')
 require('../jQuery-JSON-TagEditor/jquery.json-tag-editor.min.js')
 require('../jQuery-JSON-TagEditor/jquery.caret.min.js')
+require('../pace/pace.min.js')
 require('./custom.js')
 
 import router from './router'
@@ -21,14 +22,12 @@ import auth from './auth'
 import store from './store'
 import {mapActions, mapState} from 'vuex'
 import vSelect from 'vue-select'
-import uploader from 'vue-simple-uploader'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
 window.Vue = require('vue')
 
 import VueRouter from 'vue-router'
 window.Vue.use(VueRouter)
-
-Vue.use(uploader)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -56,19 +55,12 @@ Vue.component('deposits-crud', require('./components/deposits-crud.vue'));
 Vue.component('users-management', require('./components/users-management.vue'));
 Vue.component('users-crud', require('./components/users-crud.vue'));
 Vue.component('projects-crud', require('./components/projects-crud.vue'));
+Vue.component('equipments-crud', require('./components/equipments-crud.vue'));
+Vue.component('equipment-history-crud', require('./components/equipment-history-crud.vue'));
 Vue.component('project-form', require('./components/project-form.vue'));
 
 Vue.filter('toCurrency', function (value) {
     return parseFloat(value).toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
-    //if (typeof value !== "number") {
-    //    return value;
-    //}
-    /*var formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency', 
-        currency: 'PHP',
-        minimumFractionDigits: 0
-    });
-    return formatter.format(value);*/
 });
 
 Vue.filter('toHumanDate', function (value) {
@@ -81,7 +73,6 @@ Vue.filter('truncate', function (value, limit) {
     }
     return value
 })
-
 
 const app = new Vue({
     

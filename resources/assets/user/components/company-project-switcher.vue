@@ -129,40 +129,38 @@
                     this.setCurrentProject(project)
 
                     localStorage.setItem('project_id', project.id)
-                    
+                    this.showAddProjectModal = false
                     this.gotoProject()
                 }
             },
 
             createCompany() {
-                let self = this
                 this.loading_btn = true
             },
 
             handleSubmit() {
-                let self = this
-
                 this.$validator.validate().then(result => {
                     if (!result) {
-                        self.loading_btn = false
+                        this.loading_btn = false
                         
                     } else {
-                        self.loading_btn = true
-                        return axios.post('/api/company/' + self.current_company.id + '/project', self.project)
-                             .then(function (res) {
-                                self.loading_btn = false
+                        this.loading_btn = true
+                        return axios.post('/api/company/' + this.current_company.id + '/project', this.project)
+                             .then(res => {
+                                this.loading_btn = false
                                 
                                 // set current newly created project to current project
                                 localStorage.setItem('project_id', res.data.id)
                                 
-                                self.setCurrentProject(res.data)
-                                self.newProject(res.data)
+                                this.setCurrentProject(res.data)
+                                this.newProject(res.data)
                                 //window.location.href = '/'
+                                this.showAddProjectModal = false
                                 this.gotoProject()
                              })
-                             .catch(function (err) {
+                             .catch(err => {
                                 console.log(err)
-                                self.loading_btn = false
+                                this.loading_btn = false
                              })
                     }
                 });

@@ -22,6 +22,12 @@ class Company extends Model
         return $this->hasMany('App\Models\CompanyEquipment');
 		
     }
+
+	public function equipment_statuses() {
+		
+        return $this->hasMany('App\Models\CompanyEquipmentStatus');
+		
+    }
 	
 	public function payment_types() {
 		

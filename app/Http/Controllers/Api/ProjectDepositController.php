@@ -70,6 +70,7 @@ class ProjectDepositController extends AuthController
         $deposit->company_deposit_type_id  = $request->get('company_deposit_type_id');
         $deposit->payment_date             = $request->get('payment_date');
         $deposit->notes                    = $request->get('notes');
+        $deposit->attachment_filename      = $request->get('attachment_filename');
         
         $deposit->save();
 
@@ -110,7 +111,9 @@ class ProjectDepositController extends AuthController
         if ($request->filled('company_deposit_type_id')) {
             $deposit->company_deposit_type_id   = $request->get('company_deposit_type_id');
         }
-
+        
+        $deposit->attachment_filename       = $request->get('attachment_filename');
+        
         $deposit->save();
 
         return response()->json($deposit, 200);

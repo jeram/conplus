@@ -68,7 +68,7 @@
 
                         this.active_tab = this.project_phases[0].id
                     })
-                    .catch(function (err) {
+                    .catch(err => {
                         this.loading = false
                     })
             },

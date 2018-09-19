@@ -54,7 +54,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Name</label>
-                            <input type="text" v-validate="'required'" v-model="current_record.name" class="form-control">
+                            <input type="text" v-validate="'required'" name="name" v-model="current_record.name" class="form-control">
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">

@@ -10,7 +10,7 @@
         </li>        
         <li v-if="current_project.id != 0">
             <a href="#"><i class="fa fa-calendar"></i> <span>Schedules</span></a>
-        </li>-->
+        </li>-->        
         <router-link :to="{ name: 'Deposits' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
             <a>
                 <i class="fa fa-money"></i> <span>Deposits</span>
@@ -34,6 +34,11 @@
         <router-link :to="{ name: 'Phases' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
             <a>
                 <i class="fa fa-tasks"></i> <span>Phases</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Equipments' }" tag="li" exact-active-class="active">
+            <a>
+                <i class="fa fa-truck"></i> <span>Equipments</span>
             </a>
         </router-link>
         <router-link :to="{ name: 'Project', params: { project_id: current_project.id }}" tag="li" exact-active-class="active" v-if="current_project.id != 0">

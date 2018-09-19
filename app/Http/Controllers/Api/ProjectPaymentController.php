@@ -76,6 +76,7 @@ class ProjectPaymentController extends AuthController
         $payment->check_number             = $request->get('check_number');
         $payment->payment_date             = $request->get('payment_date');
         $payment->notes                    = $request->get('notes');
+        $payment->attachment_filename      = $request->get('attachment_filename');
         
         $payment->save();
 
@@ -122,6 +123,9 @@ class ProjectPaymentController extends AuthController
         if ($request->filled('company_payment_type_id')) {
             $payment->company_payment_type_id   = $request->get('company_payment_type_id');
         }
+        
+        $payment->attachment_filename       = $request->get('attachment_filename');
+        
 
         $payment->save();
 

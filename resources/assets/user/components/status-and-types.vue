@@ -58,6 +58,34 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label>
+                        Equipment Statuses
+                    </label>
+                    <div class="overlay" v-if="company_equipment_statuses_loading">
+                        <i class="fa fa-circle-o-notch fa-spin"></i>
+                    </div>
+                    <form v-on:submit.prevent="submitCompanyEquipmentStatuses">
+                        <div class="form-group">
+                            <json-tag-editor @change="updateCompanyEquipmentStatuses" v-if="!company_equipment_statuses_loading" :model="company_equipment_statuses"></json-tag-editor>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Submit" :disabled="company_equipment_statuses_btn" class="btn btn-primary pull-right">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="callout callout-info">
+                    <h4>Equipment Statuses</h4>
+                    <p>This will be a status for each equipment.</p>
+                    <p>Example: 'Operational', 'Non Operational'</p>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>
                         Project Note Statuses
                     </label>
                     <div class="overlay" v-if="project_note_statuses_loading">
@@ -108,11 +136,12 @@
                 </div>
             </div>
         </div>
+        -->
         <div class="row">
             <div class="col-md-8">
                 <div class="form-group">
                     <label>
-                        Payment Types
+                        Payment Status
                     </label>
                     <div class="overlay" v-if="payment_types_loading">
                         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -129,7 +158,7 @@
             </div>
             <div class="col-md-4">
                 <div class="callout callout-info">
-                    <h4>Payment Types</h4>
+                    <h4>Payment Status</h4>
                     <p>This will be a type for each payment.</p>
                     <p>Example: 'Paid', 'Pending'</p>
                 </div>
@@ -139,7 +168,7 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label>
-                        Deposit Types
+                        Deposit Status
                     </label>
                     <div class="overlay" v-if="deposit_types_loading">
                         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -156,7 +185,7 @@
             </div>
             <div class="col-md-4">
                 <div class="callout callout-info">
-                    <h4>Deposit Types</h4>
+                    <h4>Deposit Status</h4>
                     <p>This will be a type for each deposit.</p>
                     <p>Example: 'Paid', 'Pending'</p>
                 </div>
@@ -234,6 +263,10 @@
                 units: null,
                 disable_units_btn: true,
                 units_loading: true,
+
+                company_equipment_statuses: null,
+                company_equipment_statuses_btn: true,
+                company_equipment_statuses_loading: true,
             }
         },
 
@@ -245,6 +278,7 @@
             this.getPaymentTypes()
             this.getDepositTypes()
             this.getUnits()
+            this.getCompanyEquipmentStatuses()
         },
 
         methods: {
@@ -597,6 +631,57 @@
                         this.disable_units_btn = false
                      })
             },
+            
+            /* Company Equipment Statuses */
+            getCompanyEquipmentStatuses() {
+                return axios.get('/api/company/' + this.current_company.id + '/equipment_status')
+                            .then(res => {
+                                let company_equipment_statuses = []
+                                
+                                if (res.data.length > 0) {
+                                    res.data.forEach((type_data, index) => {
+                                        company_equipment_statuses.push({
+                                            id: type_data.id,
+                                            value: type_data.label,
+                                        })
+                                    })
+                                }
+                                this.company_equipment_statuses = company_equipment_statuses
+                                this.company_equipment_statuses_loading = false
+                            })
+                            .catch(function (err) {
+
+                            })
+            },
+            updateCompanyEquipmentStatuses(values) {
+                this.company_equipment_statuses = values
+                this.company_equipment_statuses_btn = false
+            },
+            submitCompanyEquipmentStatuses() {
+                this.company_equipment_statuses_btn = true
+                
+                // convert values to model compatible
+                let company_equipment_statuses = []
+                                
+                if (this.company_equipment_statuses.length > 0) {
+                    this.company_equipment_statuses.forEach((status_data, index) => {
+                        company_equipment_statuses.push({
+                            id: status_data.id,
+                            label: status_data.value,
+                        })
+                    })
+                }
+                this.company_equipment_statuses = company_equipment_statuses
+
+                return axios.post('/api/company/' + this.current_company.id + '/equipment_status', {company_equipment_statuses: this.company_equipment_statuses})
+                     .then(res => {
+                        this.company_equipment_statuses_btn = false
+                     })
+                     .catch(err => {
+                        this.company_equipment_statuses_btn = false
+                     })
+            },
+
 
         }
 

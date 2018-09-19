@@ -6,7 +6,7 @@
 		<meta name="googlebot" content="noindex, nofollow">
 		<!-- CSRF Token -->
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<title>{{ config('app.name', 'Conplus') }}</title>
+		<title>{{ config('app.name', 'Conplas') }}</title>
 		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 		<!-- Styles -->
 		<link href="{{ asset('user/css/app.css') }}" rel="stylesheet">

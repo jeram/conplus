@@ -1,7 +1,7 @@
 <template>
     <section>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
                     <form class="form-horizontal">
                         <div class="input-group">
@@ -14,45 +14,41 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-6">
                 <a @click="showForm('add_record')" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add</a>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">                
+            <div class="col-md-12">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Cost</th>
-                            <th>Date</th>
+                            <th>Notes</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
-                            <td>{{record.name}}</td>
-                            <td>{{record.cost | toCurrency}}</td>                            
-                            <td>{{record.created_at | toHumanDate}}</td>
+                            <td>{{record.name}}</td>               
+                            <td>{{record.notes}}</td>
                             <td>
-                                <span class="label label-success" v-if="record.is_active">
-                                    Active
-                                </span>
-                                <span class="label label-default" v-else>
-                                    Inactive
-                                </span>
+                                <span v-if="record.status.label=='Operational'" class="label label-success">{{record.status.label}}</span>
+                                <span v-else-if="record.status.label=='Non Operational'" class="label label-danger">{{record.status.label}}</span>
+                                <span v-else class="label label-info">{{record.status.label}}</span>
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
                                 <a class="btn btn-xs btn-danger" @click="deleteRecord(record)">Delete</a>
+                                <a class="btn btn-xs btn-warning" @click="showEquipmentHistory(record)">View History ></a>
                             </td>
                         </tr>
                         <tr v-if="records.length <= 0 && !loading">
-                            <td colspan="5"><em>No Record Found</em></td>
+                            <td colspan="4"><em>No Record Found</em></td>
                         </tr>
                         <tr v-if="loading">
-                            <td colspan="5"><i class="fa fa-circle-o-notch fa-spin"></i></td>
+                            <td colspan="4"><i class="fa fa-circle-o-notch fa-spin"></i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -61,24 +57,23 @@
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Project</span>
-            <span slot="header" v-else>Edit: Project</span>
+            <span slot="header" v-if="current_record.id == 0">New Equipment</span>
+            <span slot="header" v-else>Edit: Equipment</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Name</label>
-                            <input type="text" name="name" v-validate="'required'" v-model="current_record.name" class="form-control">
+                            <input type="text" v-validate="'required'" v-model="current_record.name" class="form-control">
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Cost</label>
-                            <input type="number" name="cost" v-validate="'required'" v-model="current_record.cost" class="form-control" min="0" step="any">
-                            <span class="text-danger">{{ errors.first('cost') }}</span>
+                            <label for="label">Notes</label>
+                            <textarea v-model="current_record.notes" class="form-control"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="label">Status</label>
-                            <select v-model="current_record.is_active" class="form-control">
+                            <select v-model="current_record.company_equipment_status_id" class="form-control">
                                 <option v-for="status in statuses" :value="status.id">{{status.label}}</option>
                             </select>
                         </div>
@@ -101,11 +96,8 @@
             ...mapState({
                 current_project: state => state.current_project,
                 current_company: state => state.current_company,
-                projects: state => state.projects,
             })
         },
-
-        props: ['project_phase_id'],
 
         data() {
             return {
@@ -117,29 +109,30 @@
                     'current_page': 1
                 },
                 records: [],
-                statuses: [
-                            {
-                                'id': 1,
-                                'label': 'Active',
-                            },
-                            {
-                                'id': 0,
-                                'label': 'Inactive',
-                            },
-                        ],
+                statuses: [],
                 current_record: null,
             }
         },
 
         mounted() {
+            this.getStatuses()
             this.getRecords()
             this.resetCurrentRecord()
         },
 
         methods: {
+            getStatuses() {
+                return axios.get('/api/company/' + this.current_company.id + '/equipment_status')
+                            .then(res => {
+                                this.statuses = res.data
+                            })
+                            .catch(function (err) {
+
+                            })
+            },
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/project', {
+                axios.get('/api/company/' + this.current_company.id + '/equipment', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
@@ -185,28 +178,11 @@
 
                         if (this.current_record.id > 0) { // edit
 
-                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_record.id, this.current_record)
+                            return axios.put('/api/company/' + this.current_company.id + '/equipment/' + this.current_record.id, this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
-
                                 this.hideForm()
-
-                                if (!this.current_record.is_active) {
-                                    this.deleteProject(this.current_record)
-                                } else {
-                                    let project = null
-
-                                    // check if project is already in the list of active projects
-                                    project = this.projects.find(o => o.id == this.current_record.id)
-
-                                    if (!project) {
-                                        this.newProject(this.current_record)
-                                    }
-                                }
-
-                                this.updateProject(this.current_record)
-
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
@@ -214,15 +190,11 @@
                                 this.loading_btn = false
                             })
                         } else { // add
-                            return axios.post('/api/company/' + this.current_company.id + '/project', this.current_record)
+                            return axios.post('/api/company/' + this.current_company.id + '/equipment', this.current_record)
                             .then(res => {
                                 this.loading_btn = false
                                 this.getRecords()
-
-                                if (this.current_record.is_active) {
-                                    this.newProject(this.current_record)
-                                }
-
+                                this.hideForm()
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
@@ -241,10 +213,9 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/project/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/equipment/' + object.id)
                     .then(res => {
                         this.getRecords()
-                        this.deleteProject(object)
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
@@ -270,7 +241,9 @@
                 this.search(search, this)
             },
 
-            ...mapActions(['setCurrentProject', 'setProjects', 'newProject', 'updateProject', 'deleteProject'])
+            showEquipmentHistory(equipment) {
+                this.$emit('load_history', equipment)
+            }
         },
 
         watch: {
