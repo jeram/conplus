@@ -80,7 +80,7 @@
                 this.loading = true
                 auth.login(this.user.email, this.user.password, this.user.remember_me)
                     .then(res => {
-                        showNotification(res.data.data.msg, 'alert-success')
+                        this.flash(res.data.data.msg, 'success')
                         
                         axios.get('/api/company')
                             .then(res => {
@@ -135,13 +135,12 @@
                                 window.location.href = '/'
                             })
                             .catch(err => {
-                                console.log(err)
-                                showNotification(err.message, 'alert-danger')
+                                this.$root.handleErrors(err.response)
                             })
                     })
                     .catch(err => {
                         //this.loading = false
-                        showNotification(err.message, 'alert-danger')
+                        this.$root.handleErrors(err.response)
                     })
             },
 

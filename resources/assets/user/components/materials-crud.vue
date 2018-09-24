@@ -132,6 +132,7 @@
                     })
                     .catch(err => {                        
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -142,6 +143,7 @@
                         this.units_loading = false
                     })
                     .catch(function (err) {
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -170,6 +172,7 @@
                         this.loading_btn = true
                         return axios.post('/api/company/' + this.current_company.id + '/materials', this.current_record)
                             .then(res => {
+                                this.flash('Record has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.getRecords()                                
 
@@ -180,8 +183,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                     }
                 });
@@ -195,11 +198,12 @@
 
                 return axios.delete('/api/company/' + this.current_company.id + '/materials/' + object.id)
                     .then(res => {
+                        this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             },
 

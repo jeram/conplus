@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -20,9 +19,24 @@ require('./custom.js')
 import router from './router'
 import auth from './auth'
 import store from './store'
-import {mapActions, mapState} from 'vuex'
+import {
+    mapActions,
+    mapState
+} from 'vuex'
+
 import vSelect from 'vue-select'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+
+import VueFlashMessage from 'vue-flash-message'
+Vue.use(VueFlashMessage, {
+    messageOptions: {
+        timeout: 2000,
+        // important: true,
+        // autoEmit: false,
+        pauseOnInteract: true
+    }
+})
+import 'vue-flash-message/dist/vue-flash-message.min.css'
 
 window.Vue = require('vue')
 
@@ -35,31 +49,35 @@ window.Vue.use(VueRouter)
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 Vue.component('v-select', vSelect)
-Vue.component('notification', require('./components/notification.vue'));
-Vue.component('company-project-switcher', require('./components/company-project-switcher.vue'));
-Vue.component('sidebar-menu', require('./components/sidebar-menu.vue'));
-Vue.component('modal', require('./components/modal.vue'));
-Vue.component('login', require('./components/login.vue'));
-Vue.component('company-form', require('./components/company-form.vue'));
-Vue.component('status-and-types', require('./components/status-and-types.vue'));
-Vue.component('json-tag-editor', require('./components/json-tag-editor.vue'));
-Vue.component('datepicker', require('./components/datepicker.vue'));
-Vue.component('slider', require('./components/slider.vue'));
-Vue.component('materials-management', require('./components/materials-management.vue'));
-Vue.component('materials-crud', require('./components/materials-crud.vue'));
-Vue.component('material-categories-crud', require('./components/material-categories-crud.vue'));
-Vue.component('pagination', require('./components/pagination.vue'));
-Vue.component('project-materials-crud', require('./components/project-materials-crud.vue'));
-Vue.component('payments-crud', require('./components/payments-crud.vue'));
-Vue.component('deposits-crud', require('./components/deposits-crud.vue'));
-Vue.component('users-management', require('./components/users-management.vue'));
-Vue.component('users-crud', require('./components/users-crud.vue'));
-Vue.component('projects-crud', require('./components/projects-crud.vue'));
-Vue.component('equipments-crud', require('./components/equipments-crud.vue'));
-Vue.component('equipment-history-crud', require('./components/equipment-history-crud.vue'));
-Vue.component('project-form', require('./components/project-form.vue'));
+Vue.component('company-project-switcher', require('./components/company-project-switcher.vue'))
+Vue.component('sidebar-menu', require('./components/sidebar-menu.vue'))
+Vue.component('modal', require('./components/modal.vue'))
+Vue.component('login', require('./components/login.vue'))
+Vue.component('company-form', require('./components/company-form.vue'))
+Vue.component('status-and-types', require('./components/status-and-types.vue'))
+Vue.component('json-tag-editor', require('./components/json-tag-editor.vue'))
+Vue.component('datepicker', require('./components/datepicker.vue'))
+Vue.component('slider', require('./components/slider.vue'))
+Vue.component('materials-management', require('./components/materials-management.vue'))
+Vue.component('materials-crud', require('./components/materials-crud.vue'))
+Vue.component('material-categories-crud', require('./components/material-categories-crud.vue'))
+Vue.component('pagination', require('./components/pagination.vue'))
+Vue.component('project-materials-crud', require('./components/project-materials-crud.vue'))
+Vue.component('payments-crud', require('./components/payments-crud.vue'))
+Vue.component('deposits-crud', require('./components/deposits-crud.vue'))
+Vue.component('users-management', require('./components/users-management.vue'))
+Vue.component('users-crud', require('./components/users-crud.vue'))
+Vue.component('projects-crud', require('./components/projects-crud.vue'))
+Vue.component('equipments-crud', require('./components/equipments-crud.vue'))
+Vue.component('equipment-history-crud', require('./components/equipment-history-crud.vue'))
+Vue.component('project-form', require('./components/project-form.vue'))
+Vue.component('clients-crud', require('./components/clients-crud.vue'))
+Vue.component('client-trades-crud', require('./components/client-trades-crud.vue'))
 
 Vue.filter('toCurrency', function (value) {
+    if (!value) {
+        return value
+    }
     return parseFloat(value).toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
 });
 
@@ -75,11 +93,11 @@ Vue.filter('truncate', function (value, limit) {
 })
 
 const app = new Vue({
-    
-	data: {
+
+    data: {
         user: auth.user
     },
-	computed: {
+    computed: {
         ...mapState(['current_company'])
     },
     methods: {
@@ -97,16 +115,46 @@ const app = new Vue({
                 self.loading = false
             })
         },
-        
+
+        handleErrors(response) {
+            if (response && response.status) {
+                let message = ''
+                switch (response.status) {
+                    case 401:
+                        message = 'You are not authorized to make this request.'
+                        break
+                    case 403:
+                        message = 'You do not have enough permissions to make this request.'
+                        if (response.data && response.data.error) {
+                            message = response.data.error
+                        }
+                        break
+                    case 404:
+                        message = 'Requested resource not found.'
+                        break
+                    case 422:
+                        message = "<ul class='list m-0'>"
+                        for (let index in response.data.errors) {
+                            message += "<li class='list-item pl-0 pr-0'><div class='list-body'>" + response.data.errors[index] + "</div></li>"
+                        }
+                        message += "</ul>"
+                        break
+                    case 500:
+                        message = 'Oops! We are having some problems right now, please try again later.'
+                        break
+                }
+                this.flash(message, 'error');
+            }
+        },
+
         ...mapActions(['setCampaigns'])
     },
-	el: '#app',
-	router,
-	store,
+    el: '#app',
+    router,
+    store,
     watch: {
         'current_company': function (newVal, oldVal) {
             //this.getProjects();
         }
     }
 });
-

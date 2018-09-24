@@ -47,6 +47,12 @@ class Company extends Model
 		
     }
 
+    public function clients() {
+		
+        return $this->hasMany('App\Models\Client');
+		
+    }
+
     public function active_projects() {
 		
         return $this->hasMany('App\Models\Project')->where('projects.is_active', 1);
@@ -92,6 +98,12 @@ class Company extends Model
     public function units() {
 		
         return $this->hasMany('App\Models\UnitOfMeasurement');
+		
+    }
+
+    public function trade_statuses() {
+		
+        return $this->hasMany('App\Models\TradeStatus');
 		
     }
 	

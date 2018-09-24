@@ -57,7 +57,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Name</label>
-                            <input type="text" v-validate="'required'" v-model="current_record.name" class="form-control">
+                            <input type="text" name="name" v-validate="'required'" v-model="current_record.name" class="form-control">
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
@@ -138,6 +138,7 @@
                     })
                     .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -148,6 +149,7 @@
                         this.permissions = res.data
                     })
                     .catch(err => {
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -180,6 +182,7 @@
                         if (this.current_record.id > 0) { // edit
                             return axios.put('/api/company/' + this.current_company.id + '/user/' + this.current_record.id, this.current_record)
                             .then(res => {
+                                this.flash('User has been successfully updated', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -188,12 +191,13 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         } else { // add
                             return axios.post('/api/company/' + this.current_company.id + '/user', this.current_record)
                             .then(res => {
+                                this.flash('User has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -204,8 +208,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         }
                         
@@ -221,11 +225,12 @@
 
                 return axios.delete('/api/company/' + this.current_company.id + '/user/' + object.id)
                     .then(res => {
+                        this.flash('User has been successfully deleted', 'success')
                         this.getRecords()
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             },
 

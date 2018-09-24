@@ -147,6 +147,8 @@
                         this.loading_btn = true
                         return axios.post('/api/company/' + this.current_company.id + '/project', this.project)
                              .then(res => {
+                                this.flash('Project has been successfully updated', 'success')
+                                
                                 this.loading_btn = false
                                 
                                 // set current newly created project to current project
@@ -159,8 +161,8 @@
                                 this.gotoProject()
                              })
                              .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                              })
                     }
                 });

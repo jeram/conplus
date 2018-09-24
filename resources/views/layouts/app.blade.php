@@ -22,13 +22,7 @@
 </head>
 <body>
     <div id="app">
-        @if (session('notification'))
-            <notification type="{{ session('notificationType') }}" message="{{ session('notification') }}"></notification>
-        @elseif (session('status'))
-            <notification type="alert-primary" message="{{ session('status') }}"></notification>
-        @else
-            <notification></notification>
-        @endif
+        <flash-message class="flashpool"></flash-message>
         <nav class="navbar navbar-expand-md navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">

@@ -23,6 +23,7 @@
     "moment": "^2.22.2",
     "vee-validate": "^2.1.0-beta.7",
     "vue": "^2.5.16",
+    "vue-flash-message": "^0.6.2",
     "vue-highcharts": "0.0.10",
     "vue-router": "^3.0.1",
     "vue-select": "^2.4.0",

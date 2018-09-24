@@ -83,10 +83,10 @@
                         }
                     })
                     .then(res => {
-                        
+                        this.flash('User has been successfully deleted', 'success')
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             }
         },

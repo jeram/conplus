@@ -41,6 +41,17 @@
 	cursor: pointer; 
 }
 
+.flashpool {
+	position: fixed;
+    top: 20px;
+    right: 20px;
+    max-height: 400px;
+    width: 260px;
+    -webkit-perspective: 400px;
+    perspective: 400px;
+    z-index: 1500;
+}
+
 /*.main-sidebar {
     z-index: 100;
 }

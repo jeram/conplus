@@ -205,6 +205,7 @@
                     })
                     .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -250,6 +251,7 @@
 
                             return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/project_material/' + this.current_record.id, this.current_record)
                             .then(res => {
+                                this.flash('Record has been successfully updated', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -258,12 +260,13 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         } else { // add
                             return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/project_material', this.current_record)
                             .then(res => {
+                                this.flash('Record has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -274,8 +277,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         }
                         
@@ -291,11 +294,12 @@
 
                 return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/project_material/' + object.id)
                     .then(res => {
+                        this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -344,6 +348,7 @@
                     })
                     .catch(err => {
                         //self.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             }, 350),
 

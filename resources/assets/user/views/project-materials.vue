@@ -62,7 +62,7 @@
             getPhases() {
                 this.loading = true
                 axios.get('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/phase')
-                    .then(res => {
+                    .then(res => {                        
                         this.loading = false
                         this.setProjectPhases(res.data)
 
@@ -70,6 +70,7 @@
                     })
                     .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 

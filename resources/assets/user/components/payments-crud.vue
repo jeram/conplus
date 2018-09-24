@@ -103,9 +103,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="label">Status</label>
-                                    <select v-model="current_record.company_payment_type_id" class="form-control">
+                                    <select v-validate="'required'" name="status" v-model="current_record.company_payment_type_id" class="form-control">
                                         <option v-for="type in payment_types" :value="type.id">{{type.label}}</option>
-                                    </select>                                    
+                                    </select>
+                                    <span class="text-danger">{{ errors.first('status') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -222,6 +223,7 @@
                     })
                     .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -231,7 +233,7 @@
                                 this.payment_types = res.data
                             })
                             .catch(function (err) {
-
+                                this.$root.handleErrors(err.response)
                             })
             },
 
@@ -278,6 +280,7 @@
 
                             return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + this.current_record.id, this.current_record)
                             .then(res => {
+                                this.flash('Record has been successfully updated', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -286,12 +289,13 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         } else { // add
                             return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment', this.current_record)
                             .then(res => {
+                                this.flash('Record has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
 
@@ -302,8 +306,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         }
                         
@@ -319,11 +323,12 @@
 
                 return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/payment/' + object.id)
                     .then(res => {
+                        this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -378,7 +383,7 @@
                             this.attachments_to_remove.splice(this.attachments_to_remove.indexOf(filename), 1);
                         })
                         .catch(err => {
-                            console.log(err)
+                            this.$root.handleErrors(err.response)
                         })
                 })
             }

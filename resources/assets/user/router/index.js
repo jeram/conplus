@@ -51,6 +51,11 @@ let routes = [
         path: '/equipments',
         component: require('../views/equipments'),
     },
+    {
+        name: 'Trades',
+        path: '/trades',
+        component: require('../views/trades'),
+    },
     /*
     {
         name: 'Materials Management',

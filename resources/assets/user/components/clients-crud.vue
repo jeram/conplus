@@ -24,24 +24,16 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Notes</th>
-                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
-                            <td>{{record.name}}</td>               
-                            <td>{{record.notes}}</td>
-                            <td>
-                                <span v-if="record.status.label=='Operational'" class="label label-success">{{record.status.label}}</span>
-                                <span v-else-if="record.status.label=='Non Operational'" class="label label-danger">{{record.status.label}}</span>
-                                <span v-else class="label label-info">{{record.status.label}}</span>
-                            </td>
+                            <td>{{record.name}}</td>
                             <td>
                                 <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
                                 <a class="btn btn-xs btn-danger" @click="deleteRecord(record)">Delete</a>
-                                <a class="btn btn-xs btn-warning" @click="showEquipmentHistory(record)">View History ></a>
+                                <a class="btn btn-xs btn-warning" @click="showClientTrades(record)">View Trades ></a>
                             </td>
                         </tr>
                         <tr v-if="records.length <= 0 && !loading">
@@ -57,8 +49,8 @@
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Equipment</span>
-            <span slot="header" v-else>Edit: Equipment</span>
+            <span slot="header" v-if="current_record.id == 0">New Client</span>
+            <span slot="header" v-else>Edit: Client</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
@@ -68,14 +60,20 @@
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Notes</label>
-                            <textarea v-model="current_record.notes" class="form-control"></textarea>
+                            <label for="label">Contact Person</label>
+                            <input type="text" v-model="current_record.contact_person" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="label">Status</label>
-                            <select v-model="current_record.company_equipment_status_id" class="form-control">
-                                <option v-for="status in statuses" :value="status.id">{{status.label}}</option>
-                            </select>
+                            <label for="label">Contact Number</label>
+                            <input type="text" v-model="current_record.contact_number" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Email</label>
+                            <input type="text" v-model="current_record.email" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Notes</label>
+                            <textarea v-model="current_record.notes" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -109,30 +107,19 @@
                     'current_page': 1
                 },
                 records: [],
-                statuses: [],
                 current_record: null,
             }
         },
 
         mounted() {
-            this.getStatuses()
             this.getRecords()
             this.resetCurrentRecord()
         },
 
         methods: {
-            getStatuses() {
-                return axios.get('/api/company/' + this.current_company.id + '/equipment_status')
-                            .then(res => {
-                                this.statuses = res.data
-                            })
-                            .catch(function (err) {
-                                this.$root.handleErrors(err.response)
-                            })
-            },
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/equipment', {
+                axios.get('/api/company/' + this.current_company.id + '/client', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
@@ -179,7 +166,7 @@
 
                         if (this.current_record.id > 0) { // edit
 
-                            return axios.put('/api/company/' + this.current_company.id + '/equipment/' + this.current_record.id, this.current_record)
+                            return axios.put('/api/company/' + this.current_company.id + '/client/' + this.current_record.id, this.current_record)
                             .then(res => {
                                 this.flash('Record has been successfully updated', 'success')
                                 this.loading_btn = false
@@ -188,11 +175,11 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                this.loading_btn = false
                                 this.$root.handleErrors(err.response)
+                                this.loading_btn = false
                             })
                         } else { // add
-                            return axios.post('/api/company/' + this.current_company.id + '/equipment', this.current_record)
+                            return axios.post('/api/company/' + this.current_company.id + '/client', this.current_record)
                             .then(res => {
                                 this.flash('Record has been successfully added', 'success')
                                 this.loading_btn = false
@@ -201,8 +188,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                this.loading_btn = false
                                 this.$root.handleErrors(err.response)
+                                this.loading_btn = false
                             })
                         }
                         
@@ -216,7 +203,7 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/equipment/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/client/' + object.id)
                     .then(res => {
                         this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
@@ -231,8 +218,10 @@
                 this.current_record = {
                     id: 0,
                     name: '',
-                    cost: '',
-                    is_active: 1,
+                    contact_person: '',
+                    contact_number: '',
+                    email: '',
+                    notes: ''
                 }
             },
 
@@ -245,8 +234,8 @@
                 this.search(search, this)
             },
 
-            showEquipmentHistory(equipment) {
-                this.$emit('load_history', equipment)
+            showClientTrades(client) {
+                this.$emit('load_trades', client)
             }
         },
 

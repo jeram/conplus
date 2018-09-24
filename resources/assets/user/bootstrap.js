@@ -49,10 +49,6 @@ window.Vue = require('vue');
 
 window.events = new Vue();
 
-window.showNotification = function(message, type = 'alert-primary') {
-    window.events.$emit('showNotification', message, type);
-}
-
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

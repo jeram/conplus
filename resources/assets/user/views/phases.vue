@@ -49,8 +49,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Name</label>
-                            <input type="text" v-validate="'required'" name="label" v-model="current_record.label" class="form-control">
-                            <span class="text-danger">{{ errors.first('label') }}</span>
+                            <input type="text" v-validate="'required'" name="name" v-model="current_record.label" class="form-control">
+                            <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
                             <label for="total_cost_estimation">Cost Estimation</label>
@@ -155,8 +155,9 @@
 
                         this.calculateAvailablePecentage()
                     })
-                    .catch(function (err) {
+                    .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
 
@@ -188,6 +189,7 @@
                         if (this.current_record.id > 0) { // edit
                             return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/phase/' + this.current_record.id, this.current_record)
                              .then(res => {
+                                this.flash('User has been successfully updated', 'success')
                                 this.loading_btn = false
                                 this.show_form = false
                                 this.getRecords()
@@ -195,12 +197,13 @@
                                 this.resetCurrentRecord()
                              })
                              .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                              })
                         } else { // add
                             return axios.post('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/phase', this.current_record)
                             .then(res => {
+                                this.flash('User has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.show_form = false
                                 this.getRecords()
@@ -208,8 +211,8 @@
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                console.log(err)
                                 this.loading_btn = false
+                                this.$root.handleErrors(err.response)
                             })
                         }                        
                     }
@@ -224,11 +227,12 @@
 
                 return axios.delete('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/phase/' + object.id)
                     .then(res => {
+                        this.flash('User has been successfully deleted', 'success')
                         this.getRecords()
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
-                        console.log(err)
+                        this.$root.handleErrors(err.response)
                     })
             },
 

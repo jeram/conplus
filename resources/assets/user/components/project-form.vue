@@ -69,8 +69,9 @@
                         this.loading = false
                         this.project = res.data
                     })
-                    .catch(function (err) {
+                    .catch(err => {
                         this.loading = false
+                        this.$root.handleErrors(err.response)
                     })
             },
         },

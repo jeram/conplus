@@ -13,6 +13,7 @@
 	</head>
 	<body class="hold-transition skin-blue sidebar-mini">
 		<div id="app" class="wrapper">
+			<flash-message class="flashpool"></flash-message>
 			<!-- Main Header -->
 			<header class="main-header">
 				<!-- Logo -->

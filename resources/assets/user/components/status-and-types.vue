@@ -68,7 +68,7 @@
                             <json-tag-editor @change="updateCompanyEquipmentStatuses" v-if="!company_equipment_statuses_loading" :model="company_equipment_statuses"></json-tag-editor>
                         </div>
                         <div class="form-group">
-                            <input type="submit" value="Submit" :disabled="company_equipment_statuses_btn" class="btn btn-primary pull-right">
+                            <input type="submit" value="Submit" :disabled="disable_company_equipment_statuses_btn" class="btn btn-primary pull-right">
                         </div>
                     </form>
                 </div>
@@ -195,6 +195,33 @@
             <div class="col-md-8">
                 <div class="form-group">
                     <label>
+                        Trade Statuses
+                    </label>
+                    <div class="overlay" v-if="trade_statuses_loading">
+                        <i class="fa fa-circle-o-notch fa-spin"></i>
+                    </div>
+                    <form v-on:submit.prevent="submitTradeStatuses">
+                        <div class="form-group">
+                            <json-tag-editor @change="updateTradeStatuses" v-if="!trade_statuses_loading" :model="trade_statuses"></json-tag-editor>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Submit" :disabled="disable_trade_statuses_btn" class="btn btn-primary pull-right">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="callout callout-info">
+                    <h4>Trade Statuses</h4>
+                    <p>This will be the statuses to use on client trades.</p>
+                    <p>Example: 'Waiting for delivery', 'Delivered'</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label>
                         Unit Of Measurements
                     </label>
                     <div class="overlay" v-if="units_loading">
@@ -265,8 +292,12 @@
                 units_loading: true,
 
                 company_equipment_statuses: null,
-                company_equipment_statuses_btn: true,
+                disable_company_equipment_statuses_btn: true,
                 company_equipment_statuses_loading: true,
+
+                trade_statuses_statuses: null,
+                disable_trade_statuses_btn: true,
+                trade_statuses_loading: true,
             }
         },
 
@@ -279,6 +310,7 @@
             this.getDepositTypes()
             this.getUnits()
             this.getCompanyEquipmentStatuses()
+            this.getTradeStatuses()
         },
 
         methods: {
@@ -299,8 +331,8 @@
                                 this.project_statuses = projectStatuses
                                 this.project_status_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateProjectStatuses(values) {
@@ -325,10 +357,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/project_status', {project_statuses: this.project_statuses})
                      .then(res => {
-                        this.disable_pstatuses_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_pstatuses_btn = true
                      })
                      .catch(err => {
                         this.disable_pstatuses_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -349,8 +383,8 @@
                                 this.project_types = projectTypes
                                 this.project_types_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateProjectTypes(values) {
@@ -375,10 +409,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/project_type', {project_types: this.project_types})
                      .then(res => {
-                        this.disable_ptypes_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_ptypes_btn = true
                      })
                      .catch(err => {
                         this.disable_ptypes_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -399,8 +435,8 @@
                                 this.project_note_statuses = projectNoteStatuses
                                 this.project_note_statuses_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateProjectNoteStatuses(values) {
@@ -425,10 +461,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/project_note_status', {project_note_statuses: this.project_note_statuses})
                      .then(res => {
-                        this.disable_pn_statuses_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_pn_statuses_btn = true
                      })
                      .catch(err => {
                         this.disable_pn_statuses_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -449,8 +487,8 @@
                                 this.project_material_statuses = projectMaterialStatuses
                                 this.project_material_statuses_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateProjectMaterialStatuses(values) {
@@ -475,10 +513,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/project_material_status', {project_material_statuses: this.project_material_statuses})
                      .then(res => {
-                        this.disable_pm_statuses_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_pm_statuses_btn = true
                      })
                      .catch(err => {
                         this.disable_pm_statuses_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -499,8 +539,8 @@
                                 this.company_payment_types = paymentTypes
                                 this.payment_types_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updatePaymentTypes(values) {
@@ -525,10 +565,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/payment_type', {company_payment_types: this.company_payment_types})
                      .then(res => {
-                        this.disable_payment_types_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_payment_types_btn = true
                      })
                      .catch(err => {
                         this.disable_payment_types_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -549,8 +591,8 @@
                                 this.company_deposit_types = depositTypes
                                 this.deposit_types_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateDepositTypes(values) {
@@ -575,10 +617,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/deposit_type', {company_deposit_types: this.company_deposit_types})
                      .then(res => {
-                        this.disable_deposit_types_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_deposit_types_btn = true
                      })
                      .catch(err => {
                         this.disable_deposit_types_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
@@ -599,8 +643,8 @@
                                 this.units = units
                                 this.units_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateUnits(values) {
@@ -625,10 +669,12 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/unit_of_measurement', {unit_of_measurements: this.units})
                      .then(res => {
-                        this.disable_units_btn = false
+                        this.flash('Success!', 'success')
+                        this.disable_units_btn = true
                      })
                      .catch(err => {
                         this.disable_units_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
             
@@ -649,8 +695,8 @@
                                 this.company_equipment_statuses = company_equipment_statuses
                                 this.company_equipment_statuses_loading = false
                             })
-                            .catch(function (err) {
-
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
                             })
             },
             updateCompanyEquipmentStatuses(values) {
@@ -675,14 +721,66 @@
 
                 return axios.post('/api/company/' + this.current_company.id + '/equipment_status', {company_equipment_statuses: this.company_equipment_statuses})
                      .then(res => {
-                        this.company_equipment_statuses_btn = false
+                        this.flash('Success!', 'success')
+                        this.company_equipment_statuses_btn = true
                      })
                      .catch(err => {
                         this.company_equipment_statuses_btn = false
+                        this.$root.handleErrors(err.response)
                      })
             },
 
+            /* Trade Statuses */
+            getTradeStatuses() {
+                return axios.get('/api/company/' + this.current_company.id + '/trade_status')
+                            .then(res => {
+                                let trade_statuses = []
+                                
+                                if (res.data.length > 0) {
+                                    res.data.forEach((type_data, index) => {
+                                        trade_statuses.push({
+                                            id: type_data.id,
+                                            value: type_data.label,
+                                        })
+                                    })
+                                }
+                                this.trade_statuses = trade_statuses
+                                this.trade_statuses_loading = false
+                            })
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
+                            })
+            },
+            updateTradeStatuses(values) {
+                this.trade_statuses = values
+                this.disable_trade_statuses_btn = false
+            },
+            submitTradeStatuses() {
+                this.disable_trade_statuses_btn = true
+                
+                // convert values to model compatible
+                let trade_statuses = []
+                                
+                if (this.trade_statuses.length > 0) {
+                    this.trade_statuses.forEach((status_data, index) => {
+                        trade_statuses.push({
+                            id: status_data.id,
+                            label: status_data.value,
+                        })
+                    })
+                }
+                this.trade_statuses = trade_statuses
 
+                return axios.post('/api/company/' + this.current_company.id + '/trade_status', {trade_statuses: this.trade_statuses})
+                     .then(res => {
+                        this.flash('Success!', 'success')
+                        this.disable_trade_statuses_btn = true
+                     })
+                     .catch(err => {
+                        this.disable_trade_statuses_btn = false
+                        this.$root.handleErrors(err.response)
+                     })
+            },
         }
 
     }

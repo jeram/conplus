@@ -46,7 +46,12 @@
                 <i class="fa fa-wrench"></i> <span>Project</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Company', params: { company_id: current_company.id }}" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link :to="{ name: 'Trades' }" tag="li" exact-active-class="active" >
+            <a>
+                <i class="fa fa-rocket"></i> <span>Trades</span>
+            </a>
+        </router-link>
+        <router-link :to="{ name: 'Company', params: { company_id: current_company.id }}" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-building-o"></i> <span>Company</span>
             </a>
@@ -91,7 +96,7 @@
         },
         
         created() {
-            console.log(this.current_project.id)
+            // console.log(this.current_project.id)
         },
 
         methods: {
