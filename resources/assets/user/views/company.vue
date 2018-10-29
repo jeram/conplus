@@ -11,13 +11,13 @@
                         <li :class="{ active: active_tab === 'company' }">
                             <a href="#company" data-toggle="tab" @click="active_tab = 'company'">Company</a>
                         </li>
-                        <li :class="{ active: active_tab === 'status_and_types' }">
+                        <li v-if="hasPermissionTo('Can Manage Statuses')" :class="{ active: active_tab === 'status_and_types' }">
                             <a href="#status_and_types" data-toggle="tab" @click="active_tab = 'status_and_types'">Statuses & Types</a>
                         </li>
-                        <li :class="{ active: active_tab === 'materials_management' }">
+                        <li v-if="hasPermissionTo('Can Manage Materials')" :class="{ active: active_tab === 'materials_management' }">
                             <a href="#materials_management" data-toggle="tab" @click="active_tab = 'materials_management'">Materials Management</a>
                         </li>
-                        <li :class="{ active: active_tab === 'users' }">
+                        <li v-if="hasPermissionTo('Can Manage Users')" :class="{ active: active_tab === 'users' }">
                             <a href="#users" data-toggle="tab" @click="active_tab = 'users'">Users</a>
                         </li>
                     </ul>
@@ -25,14 +25,14 @@
                         <div class="tab-pane" :class="{ active: active_tab === 'company' }" id="company">
                             <company-form></company-form>
                         </div>
-                        <div class="tab-pane" :class="{ active: active_tab === 'status_and_types' }" id="status_and_types">
-                            <status-and-types></status-and-types>
+                        <div v-if="hasPermissionTo('Can Manage Statuses')" class="tab-pane" :class="{ active: active_tab === 'status_and_types' }" id="status_and_types">
+                            <status-and-types :active_tab="active_tab"></status-and-types>
                         </div>
-                        <div class="tab-pane" :class="{ active: active_tab === 'materials_management' }" id="materials_management">
-                            <materials-management></materials-management>
+                        <div v-if="hasPermissionTo('Can Manage Materials')" class="tab-pane" :class="{ active: active_tab === 'materials_management' }" id="materials_management">
+                            <materials-management :active_tab="active_tab"></materials-management>
                         </div>
-                        <div class="tab-pane" :class="{ active: active_tab === 'users' }" id="users">
-                            <users-management></users-management>
+                        <div v-if="hasPermissionTo('Can Manage Users')" class="tab-pane" :class="{ active: active_tab === 'users' }" id="users">
+                            <users-management :active_tab="active_tab"></users-management>
                         </div>
                     </div>
                 </div>          
@@ -44,8 +44,10 @@
 <script>
     import auth from '../auth'
     import { mapState, mapActions } from 'vuex'
+    import { user_mixin } from '../mixins'
 
     export default {
+        mixins: [user_mixin],
 
         data() {
             return {
@@ -93,7 +95,7 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
                 })
         }
     }

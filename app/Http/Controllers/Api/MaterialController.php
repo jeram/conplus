@@ -44,6 +44,10 @@ class MaterialController extends AuthController
                 return $this->processSelect2OptionExport($request, $materials);
                 break;
             }
+            case 'autocomplete': {
+                return $this->processAutocompleteExport($request, $materials);
+                break;
+            }
             case 'json': {
                 return response()->json($materials->with('unit')->get());
                 break;
@@ -64,7 +68,7 @@ class MaterialController extends AuthController
         $material = new Material;
         $material->company_id = $company_id;
         $material->material_category_id = 1;
-        $material->unit_of_measurement_id = $request->get('unit_of_measurement_id');
+        $material->unit_of_measurement_id = 1;
         $material->name = $request->get('name');
         $material->save();
 
@@ -112,6 +116,21 @@ class MaterialController extends AuthController
         $options = [];
         foreach ($query->get() as $material) {
             array_push($options,[
+                    'value' => $material->id,
+                    'label' => $material->name,
+                ]);
+        }
+        return response()->json($options);
+    }
+
+    
+    private function processAutocompleteExport($request, $query) {
+        $query->with('unit')->orderBy('name')->paginate(10);
+
+        $options = [];
+        foreach ($query->get() as $material) {
+            array_push($options,[
+                    'id' => $material->id,
                     'value' => $material->id,
                     'label' => $material->name,
                 ]);

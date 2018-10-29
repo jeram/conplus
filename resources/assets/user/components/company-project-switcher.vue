@@ -20,8 +20,8 @@
                     <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li v-for="project in projects"><a href="javascript:void(0)" @click="changeProject(project)">{{ project.name }}</a></li>
-                        <li class="divider"></li>
-                        <li><a href="javascript:void(0)" @click="changeProject('add_project')">Add Project <i class="fa  fa-plus"></i></a></li>
+                        <li v-if="hasPermissionTo('Can Add Projects')" class="divider"></li>
+                        <li v-if="hasPermissionTo('Can Add Projects')"><a href="javascript:void(0)" @click="changeProject('add_project')">Add Project <i class="fa  fa-plus"></i></a></li>
                     </ul>
                 </div>
             </div>
@@ -54,8 +54,11 @@
 <script>
     import auth from '../auth'
     import { mapState, mapActions } from 'vuex'
+    import { user_mixin } from '../mixins'
 
     export default {
+        mixins: [user_mixin],
+
         computed: {
             ...mapState({
                 companies: state => state.companies,
@@ -104,7 +107,8 @@
             },
 
             gotoProject() {
-                this.$router.push({ name: 'Project', params: { project_id: this.current_project.id }})
+                // this.$router.push({ name: 'Project', params: { project_id: this.current_project.id }})
+                this.$router.push('/')
             },
 
             changeCompany(company) {

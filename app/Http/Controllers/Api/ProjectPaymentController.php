@@ -8,6 +8,7 @@ use App\Http\Requests\Api\ProjectPayment\PostRequest;
 use App\Http\Requests\Api\ProjectPayment\PatchRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 
 class ProjectPaymentController extends AuthController
 {
@@ -39,6 +40,15 @@ class ProjectPaymentController extends AuthController
             $payments->where('notes', 'LIKE', '%' . $request->get('q') . '%');
             $payments->orWhere('check_number', 'LIKE', '%' . $request->get('q') . '%');
         }
+        
+        if ($request->filled('date_from')) {
+            $payments->whereDate('payment_date', '>=', Carbon::createFromFormat('M j, Y', $request->get('date_from')));
+        }
+
+        if ($request->filled('date_to')) {
+            $payments->whereDate('payment_date', '<', Carbon::createFromFormat('M j, Y', $request->get('date_to')));
+        }
+
 
         $payments->select('*', \DB::raw('DATE_FORMAT(payment_date, "%b %e, %Y") as payment_date'));
         $payments->with('type');

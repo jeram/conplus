@@ -8,6 +8,7 @@ use App\Http\Requests\Api\Project\PostRequest;
 use App\Http\Requests\Api\Project\PatchRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\ProjectDetail;
 
 class ProjectController extends AuthController
 {
@@ -63,7 +64,30 @@ class ProjectController extends AuthController
     	$project->is_active = $request->get('is_active') ?? 1;
     	$project->save();
 
-    	return response()->json($project, 200);
+        //save project details
+        $project_detail = ProjectDetail::where('project_id', $project->id)->first();
+
+        if (!$project_detail) {
+            $project_detail = new ProjectDetail;
+            $project_detail->project_id = $project->id;
+            $project_detail->company_id = $project->company_id;
+        }
+
+        if($request->filled('details.description')) {
+            $project_detail->description = $request->input('details.description');
+        }
+        
+        if($request->filled('details.project_type_id')) {
+            $project_detail->project_type_id = $request->input('details.project_type_id');
+        }
+
+        if($request->filled('details.project_status_id')) {
+            $project_detail->project_status_id = $request->input('details.project_status_id');
+        }
+
+        $project_detail->save();
+
+    	return response()->json($project->load('details'), 200);
     }
 
     public function update(PatchRequest $request, $company_id, $project_id) {
@@ -81,9 +105,32 @@ class ProjectController extends AuthController
             $project->is_active = $request->get('is_active');
         }
 
-    	$project->save();
+        $project->save();
+        
+        //save project details
+        $project_detail = ProjectDetail::where('project_id', $project->id)->first();
 
-    	return response()->json($project);
+        if (!$project_detail) {
+            $project_detail = new ProjectDetail;
+            $project_detail->project_id = $project->id;
+            $project_detail->company_id = $project->company_id;
+        }
+
+        if($request->filled('details.description')) {
+            $project_detail->description = $request->input('details.description');
+        }
+        
+        if($request->filled('details.project_type_id')) {
+            $project_detail->project_type_id = $request->input('details.project_type_id');
+        }
+
+        if($request->filled('details.project_status_id')) {
+            $project_detail->project_status_id = $request->input('details.project_status_id');
+        }
+
+        $project_detail->save();
+
+    	return response()->json($project->load('details'));
     }
 
     public function destroy($company_id, $project_id) {

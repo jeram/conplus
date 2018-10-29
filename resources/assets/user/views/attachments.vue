@@ -97,7 +97,8 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
+                    // next({name: 'login'})
                 })
         }
     }

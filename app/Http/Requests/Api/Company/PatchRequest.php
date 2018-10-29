@@ -24,7 +24,7 @@ class PatchRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:companies,name',
+            'name' => 'required|string|unique:companies,name,' . $this->id,
         ];
     }
 }

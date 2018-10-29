@@ -106,5 +106,11 @@ class Company extends Model
         return $this->hasMany('App\Models\TradeStatus');
 		
     }
+
+    public function payments() {
+		
+        return $this->hasMany('App\Models\ProjectPayment');
+		
+    }
 	
 }

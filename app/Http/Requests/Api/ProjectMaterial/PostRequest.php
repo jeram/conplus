@@ -24,7 +24,7 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
-            'material_id' => 'required|gt:1',
+            'label' => 'required',
         ];
     }
 
@@ -36,8 +36,8 @@ class PostRequest extends FormRequest
     public function messages()
     {
         return [
-            'material_id.required' => 'Please select a material',
-            'material_id.gt' => 'Please select a material',
+            'label.required' => 'Please input a material',
+            // 'material_id.gt' => 'Please select a material',
         ];
     }
 }

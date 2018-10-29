@@ -1,5 +1,5 @@
 <template>
-    <div class="app-body" id="view">
+    <div class="app-body phase-page" id="view">
         <section class="content-header">
             <h1>Phases <small></small></h1>
         </section>
@@ -101,6 +101,12 @@
     }
     .info-box:hover .btn-action {
         display: inline-block;
+    }
+    .phase-page .info-box-icon {
+        width: 10px;
+    }
+    .phase-page .info-box-content {
+        margin-left: 10px;
     }
 </style>
 
@@ -268,7 +274,7 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
                 })
         }
     }

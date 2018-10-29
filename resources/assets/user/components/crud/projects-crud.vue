@@ -1,7 +1,7 @@
 <template>
     <section>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <form class="form-horizontal">
                         <div class="input-group">
@@ -14,41 +14,45 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-6">
-                <a @click="showForm('add_record')" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add</a>
+            <div class="col-md-9">
+                <a v-if="hasPermissionTo('Can Add Projects')" @click="showForm('add_record')" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add</a>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12">                
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Notes</th>
+                            <th>Cost</th>
+                            <th>Date</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
-                            <td>{{record.name}}</td>               
-                            <td>{{record.notes}}</td>
+                            <td>{{record.name}}</td>
+                            <td>{{record.cost | toCurrency}}</td>                            
+                            <td>{{record.created_at | toHumanDate}}</td>
                             <td>
-                                <span v-if="record.status.label=='Operational'" class="label label-success">{{record.status.label}}</span>
-                                <span v-else-if="record.status.label=='Non Operational'" class="label label-danger">{{record.status.label}}</span>
-                                <span v-else class="label label-info">{{record.status.label}}</span>
+                                <span class="label label-success" v-if="record.is_active">
+                                    Active
+                                </span>
+                                <span class="label label-default" v-else>
+                                    Inactive
+                                </span>
                             </td>
                             <td>
-                                <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
-                                <a class="btn btn-xs btn-danger" @click="deleteRecord(record)">Delete</a>
-                                <a class="btn btn-xs btn-warning" @click="showEquipmentHistory(record)">View History ></a>
+                                <a v-if="hasPermissionTo('Can Edit Projects')" class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
+                                <a v-if="hasPermissionTo('Can Delete Projects')" class="btn btn-xs btn-danger" @click="deleteRecord(record)">Delete</a>
                             </td>
                         </tr>
                         <tr v-if="records.length <= 0 && !loading">
-                            <td colspan="4"><em>No Record Found</em></td>
+                            <td colspan="5"><em>No Record Found</em></td>
                         </tr>
                         <tr v-if="loading">
-                            <td colspan="4"><i class="fa fa-circle-o-notch fa-spin"></i></td>
+                            <td colspan="5"><i class="fa fa-circle-o-notch fa-spin"></i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -57,8 +61,8 @@
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Equipment</span>
-            <span slot="header" v-else>Edit: Equipment</span>
+            <span slot="header" v-if="current_record.id == 0">New Project</span>
+            <span slot="header" v-else>Edit: Project</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
@@ -68,13 +72,32 @@
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Notes</label>
-                            <textarea v-model="current_record.notes" class="form-control"></textarea>
+                            <label for="label">Cost</label>
+                            <input type="number" name="cost" v-validate="'required'" v-model="current_record.cost" class="form-control" min="0" step="any">
+                            <span class="text-danger">{{ errors.first('cost') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="label">Status</label>
-                            <select v-model="current_record.company_equipment_status_id" class="form-control">
-                                <option v-for="status in statuses" :value="status.id">{{status.label}}</option>
+                            <label for="cost">Description</label>
+                            <textarea name="description" v-model="current_record.details.description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="cost">Type</label>
+                            <select name="project_type_id" v-model="current_record.details.project_type_id" class="form-control">
+                                <option value="">-- Select Type --</option>
+                                <option v-for="type in project_types" :value="type.id">{{type.label}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cost">Status</label>
+                            <select name="project_status_id" v-model="current_record.details.project_status_id" class="form-control">
+                                <option value="">-- Select Status --</option>
+                                <option v-for="status in project_statuses" :value="status.id">{{status.label}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Is Active</label>
+                            <select v-model="current_record.is_active" class="form-control">
+                                <option v-for="option in is_active_options" :value="option.id">{{option.label}}</option>
                             </select>
                         </div>
                     </div>
@@ -90,14 +113,20 @@
 
 <script>
     import { mapState, mapActions } from 'vuex'
+    import { user_mixin } from '../../mixins'
     
     export default {
+        mixins: [user_mixin],
+
         computed: {
             ...mapState({
                 current_project: state => state.current_project,
                 current_company: state => state.current_company,
+                projects: state => state.projects,
             })
         },
+
+        props: ['project_phase_id'],
 
         data() {
             return {
@@ -109,30 +138,63 @@
                     'current_page': 1
                 },
                 records: [],
-                statuses: [],
-                current_record: null,
+                is_active_options: [
+                            {
+                                'id': 1,
+                                'label': 'Active',
+                            },
+                            {
+                                'id': 0,
+                                'label': 'Inactive',
+                            },
+                        ],
+                current_record: {
+                    name: null,
+                    cost: null,
+                    is_active: 1,
+                    details: {
+                        description: null,
+                        address: null,
+                        contract_date: null,
+                        proposal_date: null,
+                        project_type_id: "",
+                        project_status_id: "",
+                    }
+                }
             }
         },
 
         mounted() {
-            this.getStatuses()
+            this.getProjectTypes()
+            this.getProjectStatuses()
             this.getRecords()
             this.resetCurrentRecord()
         },
 
         methods: {
-            getStatuses() {
-                return axios.get('/api/company/' + this.current_company.id + '/equipment_status')
-                            .then(res => {
-                                this.statuses = res.data
+            getProjectTypes() {
+                return axios.get('/api/company/' + this.current_company.id + '/project_type')
+                            .then(res => {                                
+                                this.project_types = res.data
+                                // this.project_types_loading = false
                             })
-                            .catch(function (err) {
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
+                            })
+            },
+            getProjectStatuses() {
+                return axios.get('/api/company/' + this.current_company.id + '/project_status')
+                            .then(res => {
+                                this.project_statuses = res.data
+                                // this.project_status_loading = false
+                            })
+                            .catch(err => {
                                 this.$root.handleErrors(err.response)
                             })
             },
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/equipment', {
+                axios.get('/api/company/' + this.current_company.id + '/project', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
@@ -157,6 +219,16 @@
                 } else {
 
                     this.current_record = object
+                    if (this.current_record.details == null) {
+                        this.current_record.details = {
+                            description: null,
+                            address: null,
+                            contract_date: null,
+                            proposal_date: null,
+                            project_type_id: "",
+                            project_status_id: "",
+                        }
+                    }
                 }
                 this.show_form = true
             },
@@ -179,12 +251,29 @@
 
                         if (this.current_record.id > 0) { // edit
 
-                            return axios.put('/api/company/' + this.current_company.id + '/equipment/' + this.current_record.id, this.current_record)
+                            return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_record.id, this.current_record)
                             .then(res => {
                                 this.flash('Record has been successfully updated', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
+
                                 this.hideForm()
+
+                                if (!this.current_record.is_active) {
+                                    this.deleteProject(this.current_record)
+                                } else {
+                                    let project = null
+
+                                    // check if project is already in the list of active projects
+                                    project = this.projects.find(o => o.id == this.current_record.id)
+
+                                    if (!project) {
+                                        this.newProject(this.current_record)
+                                    }
+                                }
+
+                                this.updateProject(this.current_record)
+
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
@@ -192,12 +281,18 @@
                                 this.$root.handleErrors(err.response)
                             })
                         } else { // add
-                            return axios.post('/api/company/' + this.current_company.id + '/equipment', this.current_record)
+                            return axios.post('/api/company/' + this.current_company.id + '/project', this.current_record)
                             .then(res => {
                                 this.flash('Record has been successfully added', 'success')
                                 this.loading_btn = false
                                 this.getRecords()
+
                                 this.hideForm()
+
+                                if (this.current_record.is_active) {
+                                    this.newProject(this.current_record)
+                                }
+
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
@@ -216,10 +311,11 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/equipment/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/project/' + object.id)
                     .then(res => {
                         this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
+                        this.deleteProject(object)
                         this.resetCurrentRecord()
                     })
                     .catch(err => {
@@ -233,6 +329,14 @@
                     name: '',
                     cost: '',
                     is_active: 1,
+                    details: {
+                        description: null,
+                        address: null,
+                        contract_date: null,
+                        proposal_date: null,
+                        project_type_id: "",
+                        project_status_id: "",
+                    }
                 }
             },
 
@@ -245,9 +349,7 @@
                 this.search(search, this)
             },
 
-            showEquipmentHistory(equipment) {
-                this.$emit('load_history', equipment)
-            }
+            ...mapActions(['setCurrentProject', 'setProjects', 'newProject', 'updateProject', 'deleteProject'])
         },
 
         watch: {

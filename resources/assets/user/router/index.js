@@ -7,6 +7,11 @@ let routes = [
         //component: require('../views/dashboard'),
     },
     {
+        name: 'Account',
+        path: '/account',
+        component: require('../views/account'),
+    },
+    {
         name: 'Dashboard',
         path: '/',
         component: require('../views/dashboard'),

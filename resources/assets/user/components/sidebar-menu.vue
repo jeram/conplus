@@ -11,12 +11,13 @@
         <li v-if="current_project.id != 0">
             <a href="#"><i class="fa fa-calendar"></i> <span>Schedules</span></a>
         </li>-->        
-        <router-link :to="{ name: 'Deposits' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link v-if="this.hasPermissionTo('Can Manage Accounting') && current_project.id != 0" :to="{ name: 'Deposits' }" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-money"></i> <span>Deposits</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Payments' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+
+        <router-link v-if="this.hasPermissionTo('Can Manage Accounting') && current_project.id != 0" :to="{ name: 'Payments' }" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-share"></i> <span>Payments</span>
             </a>
@@ -26,27 +27,27 @@
                 <i class="fa fa-folder-o"></i> <span>Attachments</span>
             </a>
         </router-link>-->
-        <router-link :to="{ name: 'Project Materials' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link v-if="this.hasPermissionTo('Can Manage Materials') && current_project.id != 0" :to="{ name: 'Project Materials' }" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-leaf"></i> <span>Project Materials</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Phases' }" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link v-if="this.hasPermissionTo('Can Manage Phases') && current_project.id != 0" :to="{ name: 'Phases' }" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-tasks"></i> <span>Phases</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Equipments' }" tag="li" exact-active-class="active">
+        <router-link v-if="this.hasPermissionTo('Can Manage Equipments')" :to="{ name: 'Equipments' }" tag="li" exact-active-class="active">
             <a>
-                <i class="fa fa-truck"></i> <span>Equipments</span>
+                <i class="fa fa-truck"></i> <span>Tools & Equipments</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Project', params: { project_id: current_project.id }}" tag="li" exact-active-class="active" v-if="current_project.id != 0">
+        <router-link v-if="current_project.id != 0" :to="{ name: 'Project', params: { project_id: current_project.id }}" tag="li" exact-active-class="active">
             <a>
                 <i class="fa fa-wrench"></i> <span>Project</span>
             </a>
         </router-link>
-        <router-link :to="{ name: 'Trades' }" tag="li" exact-active-class="active" >
+        <router-link v-if="this.hasPermissionTo('Can Manage Trades')" :to="{ name: 'Trades' }" tag="li" exact-active-class="active" >
             <a>
                 <i class="fa fa-rocket"></i> <span>Trades</span>
             </a>
@@ -80,8 +81,11 @@
 <script>
     import auth from '../auth'
     import { mapState, mapActions } from 'vuex'
+    import {user_mixin} from '../mixins'
 
     export default {
+        mixins: [user_mixin],
+
         computed: {
             ...mapState({
                 current_project: state => state.current_project,
@@ -96,6 +100,7 @@
         },
         
         created() {
+            //console.log(hasPermissionTo('Can View Notes'))
             // console.log(this.current_project.id)
         },
 

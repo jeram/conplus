@@ -23,9 +23,19 @@ class PatchRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email,' . $this->id,
+            'password' => 'current_password:' . $this->id,
+            'new_password' => 'required_with:password,'
         ];
+    }
+
+    public function messages()
+    {
+        return [
+            'password.current_password' => 'Incorrect Password',
+        ];  
     }
 }

@@ -3,14 +3,22 @@
         <section class="content">
            <div class="padding">
                <div class="row">
-                    <div class="col-md-5">
-                        <h3>Clients <small></small></h3>
-                        <clients-crud @load_trades="updateCurrentClient"></clients-crud>
+                   <div class="col-md-6">
+                        <div class="box box-solid"><div class="box-header with-border">
+                            <h3 class="box-title">Clients</h3></div>
+                            <div class="box-body text-left">
+                                <clients-crud @load_trades="updateCurrentClient"></clients-crud>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-7">
-                        <h3>Trades <small v-if="current_client != null">({{current_client.name}})</small></h3>
-                        <client-trades-crud v-if="current_client != null" :current_client="current_client"></client-trades-crud>
-                        <span v-else>Please select a client</span>
+                    <div class="col-md-6">
+                        <div class="box box-solid"><div class="box-header with-border">
+                            <h3 class="box-title">Trades <small v-if="current_client != null">({{current_client.name}})</small></h3></div>
+                            <div class="box-body text-left">
+                                <client-trades-crud v-if="current_client != null" :current_client="current_client"></client-trades-crud>
+                                <span v-else>Please select a client</span>
+                            </div>
+                        </div>
                     </div>
                </div>
             </div>
@@ -60,7 +68,7 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
                 })
         }
     }

@@ -18,14 +18,15 @@ use Illuminate\Http\Request;
 });*/
 
 Route::group(['prefix' => '', 'middleware' => 'auth:api', 'namespace' => 'Api'], function () {	
-	Route::get('company', 'UserController@getCompanies');
+	Route::get('get_companies', 'UserController@getCompanies');
+	Route::get('report/{report_method}', 'ReportController@index');
     Route::get('user', 'UserController@auth');
     
-    Route::group(['prefix' => 'company'], function () {
-        
-        Route::group(['prefix' => '{company_id}'], function () {
+    Route::apiResource('company', 'CompanyController');
 
-            Route::resource('/', 'CompanyController');
+    Route::group(['prefix' => 'company'], function () {
+
+        Route::group(['prefix' => '{company_id}'], function () {
 
             Route::apiResources([
                 'project' => 'ProjectController',

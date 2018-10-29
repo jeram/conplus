@@ -1,7 +1,7 @@
 <template>
     <section>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
                     <form class="form-horizontal">
                         <div class="input-group">
@@ -14,32 +14,34 @@
                     </form>
                 </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-6">
                 <a @click="showForm('add_record')" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add</a>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">                
+            <div class="col-md-12">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Unit</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="records.length > 0" v-for="(record, index) in records">
+                        <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
                             <td>{{record.name}}</td>
-                            <td>{{record.unit.label}}</td>
                             <td>
                                 <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
                                 <a class="btn btn-xs btn-danger" @click="deleteRecord(record)">Delete</a>
+                                <a class="btn btn-xs btn-warning" v-bind:class="{ disabled: selected_record.id == record.id }" @click="showClientTrades(record)">View Trades ></a>
                             </td>
                         </tr>
-                        <tr v-if="records.length <= 0">
-                            <td colspan="3"><em>No Record Found</em></td>
-                        </tr>                        
+                        <tr v-if="records.length <= 0 && !loading">
+                            <td colspan="4"><em>No Record Found</em></td>
+                        </tr>
+                        <tr v-if="loading">
+                            <td colspan="4"><i class="fa fa-circle-o-notch fa-spin"></i></td>
+                        </tr>
                     </tbody>
                 </table>
                 <pagination v-if="pagination.last_page > 1" :pagination="pagination" :offset="5" @paginate="getRecords()"></pagination>
@@ -47,22 +49,31 @@
         </div>
 
         <modal v-if="show_form" @close="hideForm">
-            <span slot="header" v-if="current_record.id == 0">New Material</span>
-            <span slot="header" v-else>Edit: {{ current_record.name }}</span>
+            <span slot="header" v-if="current_record.id == 0">New Client</span>
+            <span slot="header" v-else>Edit: Client</span>
             <div slot="body">
                 <form @submit.prevent="handleSubmit">
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Name</label>
-                            <input type="text" v-validate="'required'" name="name" v-model="current_record.name" class="form-control">
+                            <input type="text" name="name" v-validate="'required'" v-model="current_record.name" class="form-control">
                             <span class="text-danger">{{ errors.first('name') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="total_cost_estimation">Unit of Measurement</label>
-                            <select v-model="current_record.unit_of_measurement_id" class="form-control col-md-2">
-                                <option v-for="unit in units" :value="unit.id">{{unit.label}}</option>
-                            </select>
-                            <span class="text-danger">{{ errors.first('unit_of_measurement_id') }}</span>
+                            <label for="label">Contact Person</label>
+                            <input type="text" v-model="current_record.contact_person" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Contact Number</label>
+                            <input type="text" v-model="current_record.contact_number" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Email</label>
+                            <input type="text" v-model="current_record.email" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="label">Notes</label>
+                            <textarea v-model="current_record.notes" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -82,12 +93,8 @@
         computed: {
             ...mapState({
                 current_project: state => state.current_project,
-                current_company: state => state.current_company
+                current_company: state => state.current_company,
             })
-        },
-
-        props: {
-            
         },
 
         data() {
@@ -100,49 +107,36 @@
                     'current_page': 1
                 },
                 records: [],
-                units: [],
-                current_record: {
-                    id: 0,
-                    name: '',
-                    unit_of_measurement_id: '',
+                current_record: null,
+                selected_record: {
+                    id: null
                 },
-                showAddEditModal: false,
             }
         },
 
         mounted() {
             this.getRecords()
-            this.getUnits()
+            this.resetCurrentRecord()
         },
 
         methods: {
             getRecords() {
                 this.loading = true
-                axios.get('/api/company/' + this.current_company.id + '/materials', {
+                axios.get('/api/company/' + this.current_company.id + '/client', {
                         params: {
                             export_type: 'data-table',
                             q: this.search_string,
-                            page: this.pagination.current_page
+                            page: this.pagination.current_page,
                         }
                     })
-                    .then(res => {                        
+                    .then(res => {
                         this.loading = false
                         this.records = res.data.data.data
                         this.pagination = res.data.pagination
+                        this.total_amount = res.data.total_amount
                     })
-                    .catch(err => {                        
+                    .catch(err => {
                         this.loading = false
-                        this.$root.handleErrors(err.response)
-                    })
-            },
-
-            getUnits() {
-                return axios.get('/api/company/' + this.current_company.id + '/unit_of_measurement')
-                    .then(res => {
-                        this.units = res.data
-                        this.units_loading = false
-                    })
-                    .catch(function (err) {
                         this.$root.handleErrors(err.response)
                     })
             },
@@ -150,7 +144,8 @@
             showForm(object) {
                 if (object == 'add_record') {
                     this.resetCurrentRecord()
-                } else {                    
+                } else {
+
                     this.current_record = object
                 }
                 this.show_form = true
@@ -169,23 +164,38 @@
                         this.loading_btn = false
                         
                     } else {
+
                         this.loading_btn = true
-                        return axios.post('/api/company/' + this.current_company.id + '/materials', this.current_record)
+
+                        if (this.current_record.id > 0) { // edit
+
+                            return axios.put('/api/company/' + this.current_company.id + '/client/' + this.current_record.id, this.current_record)
                             .then(res => {
-                                this.flash('Record has been successfully added', 'success')
+                                this.flash('Record has been successfully updated', 'success')
                                 this.loading_btn = false
-                                this.getRecords()                                
-
-                                if (this.current_record.id !== '0') {
-                                    this.hideForm()
-                                }
-
+                                this.getRecords()
+                                this.hideForm()
                                 this.resetCurrentRecord()
                             })
                             .catch(err => {
-                                this.loading_btn = false
                                 this.$root.handleErrors(err.response)
+                                this.loading_btn = false
                             })
+                        } else { // add
+                            return axios.post('/api/company/' + this.current_company.id + '/client', this.current_record)
+                            .then(res => {
+                                this.flash('Record has been successfully added', 'success')
+                                this.loading_btn = false
+                                this.getRecords()
+                                this.hideForm()
+                                this.resetCurrentRecord()
+                            })
+                            .catch(err => {
+                                this.$root.handleErrors(err.response)
+                                this.loading_btn = false
+                            })
+                        }
+                        
                     }
                 });
                 
@@ -196,7 +206,7 @@
                     return false
                 }
 
-                return axios.delete('/api/company/' + this.current_company.id + '/materials/' + object.id)
+                return axios.delete('/api/company/' + this.current_company.id + '/client/' + object.id)
                     .then(res => {
                         this.flash('Record has been successfully deleted', 'success')
                         this.getRecords()
@@ -211,15 +221,29 @@
                 this.current_record = {
                     id: 0,
                     name: '',
-                    unit_of_measurement_id: '',
+                    contact_person: '',
+                    contact_number: '',
+                    email: '',
+                    notes: ''
                 }
             },
 
             doSearch() {
                 this.pagination.current_page = 1
                 this.getRecords()
-            }
-        }
+            },
 
+            onSearch(search) {
+                this.search(search, this)
+            },
+
+            showClientTrades(client) {
+                this.selected_record = client
+                this.$emit('load_trades', client)
+            }
+        },
+
+        watch: {
+        }
     }
 </script>

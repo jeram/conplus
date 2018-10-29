@@ -43,7 +43,7 @@ class PaymentTypeController extends AuthController
             $payment_type_ids[] = $payment_type->id;
         }
 
-        $this->company->payment_types()->whereNotIn('id', $payment_type_ids)->delete();
+        $this->company->payment_types()->whereNotIn('id', $payment_type_ids)->whereNotIn('label', ['Paid'])->delete();
 
     	return response()->json($this->company->payment_types, 200);
     }

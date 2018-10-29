@@ -1,5 +1,4 @@
 <script>
-
     export default {
         template: '<input v-bind:value="value" />',
 

@@ -3,16 +3,18 @@ import Vue from 'vue'
 export default {
     user: {
         authenticated: false,
-        profile: null
-    },
+        profile: null,
+        permissions: null
+    },    
 
     check() {
-		return axios.get('usercheck')
+		return axios.get('/usercheck')
 			.then((res) => {
 				// success
 				this.user.authenticated = true
-				this.user.profile = res.data.user
-
+                this.user.profile = res.data.user
+                this.user.permissions = res.data.user.permissions
+                
 				return Promise.resolve(res)
 			})
 			.catch((err) => {

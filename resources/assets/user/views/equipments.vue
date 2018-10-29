@@ -1,19 +1,28 @@
 <template>
     <div class="app-body" id="view">
-        <section class="content-header">
+        <!--<section class="content-header">
             <h1>Equipments <small></small></h1>
-        </section>
+        </section>-->
 
         <section class="content">
            <div class="padding">
                <div class="row">
                     <div class="col-md-6">
-                        <equipments-crud @load_history="updateCurrentEquipment"></equipments-crud>
+                        <div class="box box-solid"><div class="box-header with-border">
+                            <h3 class="box-title">Tools & Equipments</h3></div>
+                            <div class="box-body text-left">
+                                <equipments-crud @load_history="updateCurrentEquipment"></equipments-crud>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <h3>Equipment History <small v-if="current_equipment != null">({{current_equipment.name}})</small></h3>
-                        <equipment-history-crud v-if="current_equipment != null" :current_equipment="current_equipment"></equipment-history-crud>
-                        <span v-else>Please select an equipment</span>
+                        <div class="box box-solid"><div class="box-header with-border">
+                            <h3 class="box-title">Equipment History <small v-if="current_equipment != null">({{current_equipment.name}})</small></h3></div>
+                            <div class="box-body text-left">
+                                <equipment-history-crud v-if="current_equipment != null" :current_equipment="current_equipment"></equipment-history-crud>
+                                <span v-else>Please select an equipment</span>
+                            </div>
+                        </div>
                     </div>
                </div>
             </div>
@@ -63,7 +72,7 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
                 })
         }
     }

@@ -9,6 +9,8 @@ use App\Http\Requests\Api\User\PostRequest;
 use App\Http\Requests\Api\User\PatchRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use jeremykenedy\LaravelRoles\Models\Role;
+use jeremykenedy\LaravelRoles\Models\Permission;
 
 class UserController extends Controller
 {
@@ -23,6 +25,11 @@ class UserController extends Controller
 
         $users = User::query();
 
+        // filter only users for the current company
+        $users->whereHas('companies', function($query) use ($company_id) {
+            $query->where('companies.id', $company_id);
+        });
+
         // set up search parameters.
         if ($request->filled('name')) {
             $users->where('name', 'LIKE', '%' . $request->get('name') . '%');
@@ -32,6 +39,7 @@ class UserController extends Controller
         }
 
         $users->with('permissions');
+        $users->with('roles');
 
         // search
         if ($request->filled('q')) {
@@ -70,7 +78,31 @@ class UserController extends Controller
         
         $user->save();
 
-        $user->syncPermissions($request->get('permissions'));
+        if ($request->get('role') == 'User') {
+            // detach admin role
+            $user->detachRole('Admin');
+
+            $userRole 		= Role::where('name', '=', 'User')->first();
+            $user->attachRole($userRole);
+
+            //assign the selected permissions
+            $user->syncPermissions($request->get('permissions'));
+
+        } elseif($request->get('role') == 'Admin') {
+            // detach user role
+            $user->detachRole('User');
+
+            $adminRole 			= Role::where('name', '=', 'Admin')->first();
+            $user->attachRole($adminRole);
+
+            // assign all permissions
+            $permissions 		= Permission::all();
+            $user->syncPermissions($permissions);
+
+        }
+        
+        // assign to company
+        $user->companies()->sync([$company_id]);
         //email the ne user
 
 
@@ -110,11 +142,37 @@ class UserController extends Controller
         if ($request->filled('email')) {
             $user->email                    = $request->get('email');
         }
-
+        if ($request->filled('new_password')) {
+            $user->password                 = bcrypt($request->get('new_password'));
+        }
         $user->save();
 
-        $user->syncPermissions($request->get('permissions'));
+        if ($request->get('role') == 'User') {
+            // detach admin role
+            $user->detachRole('Admin');
 
+            $userRole 		= Role::where('name', '=', 'User')->first();
+            $user->attachRole($userRole);
+
+            //assign the selected permissions
+            $user->syncPermissions($request->get('permissions'));
+
+        } elseif($request->get('role') == 'Admin') {
+            // detach user role
+            $user->detachRole('User');
+
+            $adminRole 			= Role::where('name', '=', 'Admin')->first();
+            $user->attachRole($adminRole);
+
+            // assign all permissions
+            $permissions 		= Permission::all();
+            $user->syncPermissions($permissions);
+
+        }
+        /*if ($request->filled('permissions')) {
+            $user->syncPermissions($request->get('permissions'));
+        }*/
+       
         return response()->json($user, 200);
     }
 

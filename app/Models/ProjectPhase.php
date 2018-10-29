@@ -28,6 +28,12 @@ class ProjectPhase extends Model
         $this->attributes['finish_date'] = $date->format('Y-m-d');
     }
 
+    public function materials() {
+		
+        return $this->hasMany('App\Models\ProjectMaterial');
+		
+    }
+
     /*public function getStartDateAttribute() {
         if ($this->start_date) {
             return;

@@ -32,32 +32,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="records.length > 0 && !loading" v-for="(record, index) in records">
+                        <tr v-if="records.length > 0 && !loading" v-bind:key="index" v-for="(record, index) in records">
                             <td>{{record.label}}</td>
                             <td>{{record.quantity}}</td>
-                            <td>{{record.price}}</td>
+                            <td>{{record.price | toCurrency}}</td>
                             <td>{{record.total_price}}</td>
                             <td>
-                                <h4>
-                                    <span class="label label-info">
-                                        To Purchase: {{record.to_order_qty}}
-                                    </span>
-                                </h4>
-                                <h4>
-                                    <span class="label label-primary">
-                                        Warehouse: {{record.warehouse_qty}}
-                                    </span>
-                                </h4>
-                                <h4>
-                                    <span class="label label-warning">
-                                        On Site (unused): {{record.on_site_unused_qty}}
-                                    </span>
-                                </h4>
-                                <h4>
-                                    <span class="label label-success">
-                                        On Site (used): {{record.used_qty}}
-                                    </span>
-                                </h4>
+                                <span class="badge label-info label-md" title="To Purchase">
+                                    {{record.to_order_qty}}
+                                </span>&nbsp;
+                                <span class="badge label-primary" title="Warehouse">
+                                    {{record.warehouse_qty}}
+                                </span>&nbsp;
+                                <span class="badge label-warning" title="On site (unused)">
+                                    {{record.on_site_unused_qty}}
+                                </span>&nbsp;
+                                <span class="badge label-success" title="On site (used)">
+                                    {{record.used_qty}}
+                                </span>
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-info" @click="showForm(record)">Edit</a>
@@ -75,6 +67,22 @@
                 <pagination v-if="pagination.last_page > 1" :pagination="pagination" :offset="5" @paginate="getRecords()"></pagination>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <span class="badge label-info">
+                    To Purchase
+                </span>&nbsp;
+                <span class="badge label-primary">
+                    Warehouse
+                </span>&nbsp;
+                <span class="badge label-warning">
+                    On Site (unused)
+                </span>&nbsp;
+                <span class="badge label-success">
+                    On Site (used)
+                </span>
+            </div>
+        </div>
 
         <modal v-if="show_form" @close="hideForm">
             <span slot="header" v-if="current_record.id == 0">New Project Material</span>
@@ -84,21 +92,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="label">Material</label>
-                            <v-select label="Material" :filterable="false" v-model="current_record.material" :options="material_options" @search="onSearch" class="">
-                                <template slot="no-options">
-                                    Input Material
-                                </template>
-                                <template slot="option" slot-scope="option">
-                                    <div class="d-center">
-                                        {{ option.label }}
-                                    </div>
-                                </template>
-                                <template slot="selected-option" slot-scope="option">
-                                    <div class="selected d-center">
-                                        {{ option.label }}
-                                    </div>
-                                </template>
-                            </v-select>
+                            <typeahead v-validate="'required'" v-model="current_record.material" :url="material_search_url" class="form-control"></typeahead>
                         </div>
                         <div class="form-group">
                             <div class="row">
@@ -120,7 +114,7 @@
                         </div>
                         <div class="form-group">
                             <fieldset>
-                                <legend>Qty per Location</legend>
+                                <legend>Qty per Location <div class="pull-right text-sm" v-bind:class="{ 'text-danger': total_qty_per_location != current_record.quantity }" style="margin-top: 12px;">Total: {{total_qty_per_location}}</div></legend>
                                 <div class="col-md-3">
                                     <label for="label">To Purchase</label>
                                     <input type="number" v-model="current_record.to_order_qty" min="0" step="any" class="form-control">
@@ -173,7 +167,9 @@
                 loading_btn: false,
                 show_form: false,
                 search_string: '',
+                material_search_url: '',
                 material_options: [],
+                total_qty_per_location: 0,
                 pagination: {
                     'current_page': 1
                 },
@@ -182,8 +178,13 @@
             }
         },
 
-        mounted() {
-            this.getRecords()
+        created() {
+            this.material_search_url = '/api/company/' + this.current_company.id + '/materials?export_type=autocomplete'
+
+            if (this.project_phase_id) {
+                this.getRecords()
+            }
+            
             this.resetCurrentRecord()
         },
 
@@ -213,16 +214,17 @@
                 if (object == 'add_record') {
                     this.resetCurrentRecord()
                 } else {
-                    object.material = {
+                    /*object.material = {
                         value: this.current_record.material_id,
-                        label: this.current_record.label,
-                    }
+                        text: this.current_record.label,
+                    }*/
+                    // console.log(object)
 
                     this.current_record = object
 
                     this.current_record.material = {
                         value: this.current_record.material_id,
-                        label: this.current_record.label,
+                        text: this.current_record.label,
                     }
                 }
                 this.show_form = true
@@ -242,12 +244,18 @@
                         
                     } else {
 
+                        /*let qty_per_location = this.current_record.to_order_qty + this.current_record.warehouse_qty + this.current_record.on_site_unused_qty + this.current_record.used_qty
+
+                        if (qty_per_location != this.current_record.quantity) {
+
+                        }*/
+
                         this.loading_btn = true
 
                         if (this.current_record.id > 0) { // edit
-
+                            console.log(this.current_record.material)
                             this.current_record.material_id = this.current_record.material.value
-                            this.current_record.label = this.current_record.material.label
+                            this.current_record.label = this.current_record.material.text
 
                             return axios.put('/api/company/' + this.current_company.id + '/project/' + this.current_project.id + '/project_material/' + this.current_record.id, this.current_record)
                             .then(res => {
@@ -309,7 +317,8 @@
                     project_phase_id: this.project_phase_id,
                     material: {
                         value: 0,
-                        label: ''
+                        label: '',
+                        text: ''
                     },
                     quantity: 0,
                     price: 0,
@@ -333,7 +342,7 @@
                 this.search(search, this)
             },
 
-            search: _.debounce( (search, self) => {
+            /*search: _.debounce( (search, self) => {
                 axios.get('/api/company/' + self.current_company.id + '/materials', {
                         params: {
                             export_type: 'select2-option',
@@ -350,10 +359,14 @@
                         //self.loading = false
                         this.$root.handleErrors(err.response)
                     })
-            }, 350),
+            }, 350),*/
 
             calculateTotalPrice() {
-                this.current_record.total_price = this.current_record.quantity * this.current_record.price
+                this.current_record.total_price = parseFloat(this.current_record.quantity * this.current_record.price)
+            },
+
+            calculateTotalQtyPerLocation() {
+                this.total_qty_per_location = (parseFloat(this.current_record.to_order_qty) || 0) + (parseFloat(this.current_record.warehouse_qty) || 0) + (parseFloat(this.current_record.on_site_unused_qty) || 0) + (parseFloat(this.current_record.used_qty) || 0)
             }
         },
 
@@ -363,8 +376,25 @@
                 this.getRecords()
             },
             'current_record.material': function (newVal, oldVal) {
-                this.current_record.material_id = this.current_record.material.value
-                this.current_record.label = this.current_record.material.label
+                this.current_record.material_id = newVal.value
+                this.current_record.label = newVal.text
+
+                // console.log(newVal)
+                // console.log(this.current_record.material)
+                // this.current_record.material_id = this.current_record.material.value
+                // this.current_record.label = this.current_record.material.label
+            },
+            'current_record.to_order_qty': function (newVal, oldVal) {
+                this.calculateTotalQtyPerLocation()
+            },
+            'current_record.warehouse_qty': function (newVal, oldVal) {
+                this.calculateTotalQtyPerLocation()
+            },
+            'current_record.on_site_unused_qty': function (newVal, oldVal) {
+                this.calculateTotalQtyPerLocation()
+            },
+            'current_record.used_qty': function (newVal, oldVal) {
+                this.calculateTotalQtyPerLocation()
             },
         }
     }

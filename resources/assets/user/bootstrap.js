@@ -43,6 +43,10 @@ if (token) {
 
 if (api_token) {
     window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('api_token')
+
+    $.ajaxSetup({
+        headers: { "Authorization": 'Bearer ' + localStorage.getItem('api_token') }
+    });
 }
 
 window.Vue = require('vue');

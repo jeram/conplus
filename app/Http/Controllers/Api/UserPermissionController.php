@@ -19,8 +19,8 @@ class UserPermissionController extends Controller
         $permissions = UserPermission::query();
         $permissions->whereNotIn('slug', 
                 [
-                    'manage.accounting',
-                    'add.accounting',
+                    // 'manage.accounting',
+                    /*'add.accounting',
                     'edit.accounting',
                     'delete.accounting',
                     'view.accounting',
@@ -53,7 +53,7 @@ class UserPermissionController extends Controller
                     'add.notes',
                     'edit.notes',
                     'delete.notes',
-                    'view.notes',
+                    'view.notes',*/
                 ]);
         
         return response()->json($permissions->get());

@@ -24,7 +24,7 @@ class PatchRequest extends FormRequest
     public function rules()
     {
         return [
-            'material_id' => 'required',
+            'label' => 'required',
         ];
     }
 
@@ -36,7 +36,7 @@ class PatchRequest extends FormRequest
     public function messages()
     {
         return [
-            'material_id.required' => 'Please select a material',
+            'label.required' => 'Please select a material',
         ];
     }
 }

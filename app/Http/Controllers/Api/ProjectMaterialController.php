@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\ProjectMaterial;
 use App\Models\Project;
+use App\Models\Material;
 use App\Http\Requests\Api\ProjectMaterial\PostRequest;
 use App\Http\Requests\Api\ProjectMaterial\PatchRequest;
 use Illuminate\Http\Request;
@@ -63,26 +64,41 @@ class ProjectMaterialController extends AuthController
      * @return \Illuminate\Http\Response
      */
     public function store(PostRequest $request, $company_id, $project_id)
-    {        
-        $material = new ProjectMaterial;
-        $material->company_id           = $company_id;
-        $material->project_id           = $project_id;
-        $material->project_phase_id     = $request->get('project_phase_id');
-        $material->quantity             = $request->get('quantity');
-        $material->price                = $request->get('price');
-        $material->total_price          = $request->get('total_price');
-        $material->to_order_qty         = $request->get('to_order_qty');
-        $material->warehouse_qty        = $request->get('warehouse_qty');
-        $material->on_site_unused_qty   = $request->get('on_site_unused_qty');
-        $material->used_qty             = $request->get('used_qty');
-        $material->warehouse_qty        = $request->get('warehouse_qty');
-        $material->notes                = $request->get('notes');
-        $material->label                = $request->get('label');
-        $material->material_id          = $request->get('material_id');
-        
-        $material->save();
+    {
+        $project_material = new ProjectMaterial;
 
-        return response()->json($material, 200);
+        $project_material->company_id           = $company_id;
+        $project_material->project_id           = $project_id;
+        $project_material->project_phase_id     = $request->get('project_phase_id');
+        $project_material->quantity             = $request->get('quantity');
+        $project_material->price                = $request->get('price');
+        $project_material->total_price          = $request->get('total_price');
+        $project_material->to_order_qty         = $request->get('to_order_qty');
+        $project_material->warehouse_qty        = $request->get('warehouse_qty');
+        $project_material->on_site_unused_qty   = $request->get('on_site_unused_qty');
+        $project_material->used_qty             = $request->get('used_qty');
+        $project_material->warehouse_qty        = $request->get('warehouse_qty');
+        $project_material->notes                = $request->get('notes');
+        $project_material->label                = $request->get('label');
+        $project_material->material_id          = $request->get('material_id');
+
+        // check if material defined is not in materials table
+        if(!$request->get('material_id')) {
+            // add it to material's table
+            $material = new Material;
+            $material->company_id               = $company_id;
+            $material->material_category_id     = 1;
+            $material->unit_of_measurement_id   = 1;
+            $material->name                     = $request->get('label');
+            $material->save();
+
+            // set project material values
+            $project_material->material_id      = $material->id;
+        }
+        
+        $project_material->save();
+
+        return response()->json($project_material, 200);
     }
 
     /**
@@ -105,45 +121,59 @@ class ProjectMaterialController extends AuthController
      */
     public function update(PatchRequest $request, $company_id, $project_id, $material_id)
     {
-        $material = ProjectMaterial::find($material_id);
+        $project_material = ProjectMaterial::find($material_id);
         
         if ($request->filled('project_phase_id')) {
-            $material->project_phase_id     = $request->get('project_phase_id');
+            $project_material->project_phase_id     = $request->get('project_phase_id');
         }
         if ($request->filled('quantity')) {
-            $material->quantity             = $request->get('quantity');
+            $project_material->quantity             = $request->get('quantity');
         }
         if ($request->filled('price')) {
-            $material->price                = $request->get('price');
+            $project_material->price                = $request->get('price');
         }
         if ($request->filled('total_price')) {
-            $material->total_price          = $request->get('total_price');
+            $project_material->total_price          = $request->get('total_price');
         }
         if ($request->filled('to_order_qty')) {
-            $material->to_order_qty         = $request->get('to_order_qty');
+            $project_material->to_order_qty         = $request->get('to_order_qty');
         }
         if ($request->filled('warehouse_qty')) {
-            $material->warehouse_qty        = $request->get('warehouse_qty');
+            $project_material->warehouse_qty        = $request->get('warehouse_qty');
         }
         if ($request->filled('on_site_unused_qty')) {
-            $material->on_site_unused_qty   = $request->get('on_site_unused_qty');
+            $project_material->on_site_unused_qty   = $request->get('on_site_unused_qty');
         }
         if ($request->filled('used_qty')) {
-            $material->used_qty             = $request->get('used_qty');
+            $project_material->used_qty             = $request->get('used_qty');
         }
         if ($request->filled('notes')) {
-            $material->notes                = $request->get('notes');
+            $project_material->notes                = $request->get('notes');
         }
         if ($request->filled('label')) {
-            $material->label                = $request->get('label');
+            $project_material->label                = $request->get('label');
         }
         if ($request->filled('material_id')) {
-            $material->material_id          = $request->get('material_id');
+            $project_material->material_id          = $request->get('material_id');
         }
         
-        $material->save();
+        // check if material defined is not in materials table
+        if(!$request->get('material_id')) {
+            // add it to material's table
+            $material = new Material;
+            $material->company_id               = $company_id;
+            $material->material_category_id     = 1;
+            $material->unit_of_measurement_id   = 1;
+            $material->name                     = $request->get('label');
+            $material->save();
 
-        return response()->json($material, 200);
+            // set project material values
+            $project_material->material_id      = $material->id;
+        }
+
+        $project_material->save();
+
+        return response()->json($project_material, 200);
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Requests\Api\Trade\PostRequest;
 use App\Http\Requests\Api\Trade\PatchRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Trade;
+use Carbon\Carbon;
 
 class TradeController extends AuthController
 {
@@ -31,6 +32,14 @@ class TradeController extends AuthController
         // search
         if ($request->filled('q')) {
             $trades->where('description', 'LIKE', '%' . $request->get('q') . '%');
+        }
+
+        if ($request->filled('date_from')) {
+            $trades->whereDate('payment_date', '>=', Carbon::createFromFormat('M j, Y', $request->get('date_from')));
+        }
+
+        if ($request->filled('date_to')) {
+            $trades->whereDate('payment_date', '<', Carbon::createFromFormat('M j, Y', $request->get('date_to')));
         }
 
         $trades->select('*', \DB::raw('DATE_FORMAT(payment_date, "%b %e, %Y") as payment_date'));

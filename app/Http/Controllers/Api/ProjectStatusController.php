@@ -53,9 +53,9 @@ class ProjectStatusController extends AuthController
             $project_status_ids[] = $project_status->id;
         }
 
-        $this->company->project_statuses()->whereNotIn('id', $project_status_ids)->delete();
+        $this->company->project_statuses()->whereNotIn('id', $project_status_ids)->whereNotIn('label', ['Completed'])->delete();
 
-    	return response()->json($project->statuses, 200);
+    	return response()->json($this->company->project_statuses, 200);
     }
 
     public function update(PatchRequest $request, $company_id) {

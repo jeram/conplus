@@ -31,7 +31,7 @@ class Project extends Model
 
     public function status() {
 		
-        return $this->hasOne('App\Models\ProjectStatus');
+        return $this->belongsToMany('App\Models\ProjectStatus','project_details');
 		
     }
 	
@@ -69,5 +69,15 @@ class Project extends Model
 		
         return $this->hasMany('App\Models\ProjectSchedule');
 		
+    }
+
+    public function getStatusLabel() {
+
+        if (!$this->details->project_status_id) {
+            return '';
+        }
+
+        return $this->status()->find($this->details->project_status_id)->label;
+
     }
 }

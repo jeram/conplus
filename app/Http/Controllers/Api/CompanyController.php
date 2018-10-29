@@ -49,14 +49,12 @@ class CompanyController extends AuthController
     	return response()->json($company, 200);
     }
 
-    public function update(PatchRequest $request, Company $company) {
+    public function update(PatchRequest $request, $company_id) {
+        $company = Company::find($company_id);
+
     	// updating a company here
     	if ($request->filled('name')) {
             $company->name = $request->get('name');
-        }
-
-        if ($request->filled('cost')) {
-            $company->cost = $request->get('cost');
         }
 
     	$company->save();
@@ -71,8 +69,10 @@ class CompanyController extends AuthController
     }
 
     public function restore(Company $company) {
-    	$company = Company::withTrashed()->findOrFail($company_id);
-        $this->authorize('restore', $company);
+        $company = Company::withTrashed()->findOrFail($company_id);
+        
+        // $this->authorize('restore', $company);
+        
         $company->restore();
 
         return response()->json($company);

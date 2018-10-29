@@ -34,21 +34,26 @@
 								<!-- Menu Toggle Button -->
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 									<!-- The user image in the navbar-->
-									<img src="{{ asset('AdminLTE-2.4.5/dist/img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
+									<!--<img src="{{ asset('AdminLTE-2.4.5/dist/img/user2-160x160.jpg') }}" class="user-image" alt="User Image">-->
 									<!-- hidden-xs hides the username on small devices so only the image appears. -->
-									<span class="hidden-xs">Alexander Pierce</span>
+									<span class="hidden-xs">
+									@guest											
+									@else
+										{{Auth()->user()->name}}
+									@endguest
+									</span>
 								</a>
 								<ul class="dropdown-menu">
 									<!-- The user image in the menu -->
-									<li class="user-header">
+									<!--<li class="user-header">
 										<img src="{{ asset('AdminLTE-2.4.5/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
 										<p>
 											Alexander Pierce - Web Developer
 											<small>Member since Nov. 2012</small>
 										</p>
-									</li>
+									</li>-->
 									<!-- Menu Body -->
-									<li class="user-body">
+									<!--<li class="user-body">
 										<div class="row">
 											<div class="col-xs-4 text-center">
 												<a href="#">Followers</a>
@@ -60,12 +65,15 @@
 												<a href="#">Friends</a>
 											</div>
 										</div>
-										<!-- /.row -->
-									</li>
+									</li>-->
 									<!-- Menu Footer-->
 									<li class="user-footer">
 										<div class="pull-left">
-											<a href="#" class="btn btn-default btn-flat">Profile</a>
+											<router-link :to="{ name: 'Account' }">
+												<a class="btn btn-default btn-flat">
+													<i class="fa fa-wrench"></i> <span>Account Settings</span>
+												</a>
+											</router-link>
 										</div>
 										<div class="pull-right">
 											@guest
@@ -110,9 +118,15 @@
 					<!--Anything you want-->
 				</div>
 				<!-- Default to the left -->
-				<strong>Copyright &copy; 2018 <a href="http://phpdev4u.com">phpdev4u</a>.</strong> All rights reserved.
+				<strong>Copyright &copy; 2018 Conplas Builders</a>.</strong> All rights reserved.
 			</footer>
 		</div>
+		@auth
+		<script>
+			window.user = @json(auth()->user());
+			window.user.permissions = @json(auth()->user()->permissions()->pluck('name')->toArray());
+		</script>
+		@endauth
 		<!-- Scripts -->
 		<script src="{{ asset('user/js/app.js') }}"></script>
 	</body>

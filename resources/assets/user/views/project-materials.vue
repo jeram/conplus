@@ -8,7 +8,7 @@
            <div class="padding">
                 <div class="nav-tabs-custom" v-if="project_phases.length > 0">
                     <ul class="nav nav-tabs">
-                        <li v-for="(phase, index) in project_phases" :class="{ active: active_tab === phase.id }">
+                        <li v-for="(phase, index) in project_phases" v-bind:key="index" :class="{ active: active_tab === phase.id }">
                             <a href="javascript:void(0)" @click="active_tab = phase.id">{{phase.label}}</a>
                         </li>
                     </ul>
@@ -83,7 +83,7 @@
                     next()
                 })
                 .catch((err) => {
-                    next({name: 'login'})
+                    window.location.href = '/login'
                 })
         }
     }

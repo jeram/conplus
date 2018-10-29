@@ -43,7 +43,7 @@ class DepositTypeController extends AuthController
             $deposit_type_ids[] = $deposit_type->id;
         }
 
-        $this->company->deposit_types()->whereNotIn('id', $deposit_type_ids)->delete();
+        $this->company->deposit_types()->whereNotIn('id', $deposit_type_ids)->whereNotIn('label', ['Paid'])->delete();
 
     	return response()->json($this->company->deposit_types, 200);
     }

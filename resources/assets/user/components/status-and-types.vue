@@ -23,7 +23,8 @@
                 <div class="callout callout-info">
                     <h4>Project Statuses</h4>
                     <p>This will be the status for each project.</p>
-                    <p>Example: 'In-progress', 'Completed'</p> 
+                    <p>Reserved: 'Completed'</p>
+                    <p>Example: 'In-progress', 'Completed'</p>
                 </div>
             </div>
         </div>
@@ -77,6 +78,7 @@
                 <div class="callout callout-info">
                     <h4>Equipment Statuses</h4>
                     <p>This will be a status for each equipment.</p>
+                    <p>Reserved: 'Operational', 'Non Operational'</p>
                     <p>Example: 'Operational', 'Non Operational'</p>
                 </div>
             </div>
@@ -160,6 +162,7 @@
                 <div class="callout callout-info">
                     <h4>Payment Status</h4>
                     <p>This will be a type for each payment.</p>
+                    <p>Reserved: 'Paid'</p>
                     <p>Example: 'Paid', 'Pending'</p>
                 </div>
             </div>
@@ -187,6 +190,7 @@
                 <div class="callout callout-info">
                     <h4>Deposit Status</h4>
                     <p>This will be a type for each deposit.</p>
+                    <p>Reserved: 'Paid'</p>
                     <p>Example: 'Paid', 'Pending'</p>
                 </div>
             </div>
@@ -218,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <!--<div class="row">
             <div class="col-md-8">
                 <div class="form-group">
                     <label>
@@ -244,7 +248,7 @@
                     <p>Example: 'Gallons', 'Pcs'</p>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 <script>
@@ -257,9 +261,7 @@
             })
         },
 
-        props: {
-            
-        },
+        props: ['active_tab'],
 
         data() {
             return {
@@ -302,15 +304,6 @@
         },
 
         created() {
-            this.getProjectStatuses()
-            this.getProjectTypes()
-            this.getProjectNoteStatuses()
-            this.getProjectMaterialStatuses()
-            this.getPaymentTypes()
-            this.getDepositTypes()
-            this.getUnits()
-            this.getCompanyEquipmentStatuses()
-            this.getTradeStatuses()
         },
 
         methods: {
@@ -701,10 +694,10 @@
             },
             updateCompanyEquipmentStatuses(values) {
                 this.company_equipment_statuses = values
-                this.company_equipment_statuses_btn = false
+                this.disable_company_equipment_statuses_btn = false
             },
             submitCompanyEquipmentStatuses() {
-                this.company_equipment_statuses_btn = true
+                this.disable_company_equipment_statuses_btn = true
                 
                 // convert values to model compatible
                 let company_equipment_statuses = []
@@ -722,10 +715,10 @@
                 return axios.post('/api/company/' + this.current_company.id + '/equipment_status', {company_equipment_statuses: this.company_equipment_statuses})
                      .then(res => {
                         this.flash('Success!', 'success')
-                        this.company_equipment_statuses_btn = true
+                        this.disable_company_equipment_statuses_btn = true
                      })
                      .catch(err => {
-                        this.company_equipment_statuses_btn = false
+                        this.disable_company_equipment_statuses_btn = false
                         this.$root.handleErrors(err.response)
                      })
             },
@@ -769,6 +762,7 @@
                         })
                     })
                 }
+                
                 this.trade_statuses = trade_statuses
 
                 return axios.post('/api/company/' + this.current_company.id + '/trade_status', {trade_statuses: this.trade_statuses})
@@ -780,6 +774,22 @@
                         this.disable_trade_statuses_btn = false
                         this.$root.handleErrors(err.response)
                      })
+            },
+        },
+
+        watch: {
+            'active_tab': function (newVal, oldVal) {
+                if (this.active_tab == 'status_and_types') {
+                    this.getProjectStatuses()
+                    this.getProjectTypes()
+                    // this.getProjectNoteStatuses()
+                    //this.getProjectMaterialStatuses()
+                    this.getPaymentTypes()
+                    this.getDepositTypes()
+                    // this.getUnits()
+                    this.getCompanyEquipmentStatuses()
+                    this.getTradeStatuses()
+                }
             },
         }
 

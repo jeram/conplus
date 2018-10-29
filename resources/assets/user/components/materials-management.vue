@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-md-12">
-            <materials-crud></materials-crud>
+            <materials-crud :active_tab="active_tab"></materials-crud>
         </div>
     </div>
 </template>
@@ -17,13 +17,11 @@
             })
         },
 
-        props: {
-            
-        },
+        props: ['active_tab'],
 
         data() {
             return {
-                active_tab: 'materials',
+                // active_tab: 'materials',
             }
         },
 
@@ -31,7 +29,6 @@
             closeModal() {
 
             },
-        }
-
+        },
     }
 </script>

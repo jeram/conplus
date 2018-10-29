@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-md-12">
-            <users-crud></users-crud>
+            <users-crud :active_tab="active_tab"></users-crud>
         </div>
     </div>
 </template>
@@ -17,9 +17,7 @@
             })
         },
 
-        props: {
-            
-        },
+        props: ['active_tab'],
 
         data() {
             return {

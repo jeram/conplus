@@ -45,6 +45,15 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can Manage Materials',
 			    'model' => 'Permission',
 			]);
+		}
+		
+		if (Permission::where('name', '=', 'Can Manage Phases')->first() === null) {
+			Permission::create([
+			    'name' => 'Can Manage Phases',
+			    'slug' => 'manage.phases',
+			    'description' => 'Can Manage Phases',
+			    'model' => 'Permission',
+			]);
         }
 		
 		if (Permission::where('name', '=', 'Can Manage Equipments')->first() === null) {
@@ -54,16 +63,34 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can Manage Equipments',
 			    'model' => 'Permission',
 			]);
+		}
+		
+		if (Permission::where('name', '=', 'Can Manage Trades')->first() === null) {
+			Permission::create([
+			    'name' => 'Can Manage Trades',
+			    'slug' => 'manage.trades',
+			    'description' => 'Can Manage Trades',
+			    'model' => 'Permission',
+			]);
+		}
+		
+		if (Permission::where('name', '=', 'Can Manage Statuses')->first() === null) {
+			Permission::create([
+			    'name' => 'Can Manage Statuses',
+			    'slug' => 'manage.statuses',
+			    'description' => 'Can Manage Statuses',
+			    'model' => 'Permission',
+			]);
         }
 		
-		if (Permission::where('name', '=', 'Can Manage Customers')->first() === null) {
+		/*if (Permission::where('name', '=', 'Can Manage Customers')->first() === null) {
 			Permission::create([
 			    'name' => 'Can Manage Customers',
 			    'slug' => 'manage.customers',
 			    'description' => 'Can Manage Customers',
 			    'model' => 'Permission',
 			]);
-        }
+        }*/
 		
 		#Projects
         if (Permission::where('name', '=', 'Can Add Projects')->first() === null) {
@@ -82,9 +109,18 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can Edit Projects',
 			    'model' => 'Permission',
 			]);
-        }
+		}
 		
 		if (Permission::where('name', '=', 'Can Delete Projects')->first() === null) {
+			Permission::create([
+			    'name' => 'Can Delete Projects',
+			    'slug' => 'delete.projects',
+			    'description' => 'Can Delete Projects',
+			    'model' => 'Permission',
+			]);
+        }
+		
+		/*if (Permission::where('name', '=', 'Can Delete Projects')->first() === null) {
 			Permission::create([
 			    'name' => 'Can Delete Projects',
 			    'slug' => 'delete.projects',
@@ -101,7 +137,7 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can Add Companies',
 			    'model' => 'Permission',
 			]);
-        }
+        }*/
 		
 		if (Permission::where('name', '=', 'Can Edit Companies')->first() === null) {
 			Permission::create([
@@ -112,17 +148,17 @@ class PermissionsTableSeeder extends Seeder
 			]);
         }
 		
-		if (Permission::where('name', '=', 'Can Delete Companies')->first() === null) {
+		/*if (Permission::where('name', '=', 'Can Delete Companies')->first() === null) {
 			Permission::create([
 			    'name' => 'Can Delete Companies',
 			    'slug' => 'delete.companies',
 			    'description' => 'Can Delete Companies',
 			    'model' => 'Permission',
 			]);
-        }
+        }*/
 		
 		#Attachments
-		if (Permission::where('name', '=', 'Can Add Attachments')->first() === null) {
+		/*if (Permission::where('name', '=', 'Can Add Attachments')->first() === null) {
 			Permission::create([
 			    'name' => 'Can Add Attachments',
 			    'slug' => 'add.attachments',
@@ -193,10 +229,10 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can View Notes',
 			    'model' => 'Permission',
 			]);
-        }
+        }*/
 		
 		#Phases
-		if (Permission::where('name', '=', 'Can Add Phases')->first() === null) {
+		/*if (Permission::where('name', '=', 'Can Add Phases')->first() === null) {
 			Permission::create([
 			    'name' => 'Can Add Phases',
 			    'slug' => 'add.phases',
@@ -267,6 +303,6 @@ class PermissionsTableSeeder extends Seeder
 			    'description' => 'Can View Schedules',
 			    'model' => 'Permission',
 			]);
-        }
+        }*/
     }
 }

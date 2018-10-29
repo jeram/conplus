@@ -43,7 +43,7 @@ class CompanyEquipmentStatusController extends AuthController
             $status_ids[] = $status->id;
         }
 
-        $this->company->equipment_statuses()->whereNotIn('id', $status_ids)->delete();
+        $this->company->equipment_statuses()->whereNotIn('id', $status_ids)->whereNotIn('label', ['Operational', 'Non Operational'])->delete();
 
     	return response()->json($this->company->equipment_statuses, 200);
     }

@@ -21,6 +21,7 @@ class UserController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
+            $user->permissions = $user->permissions()->pluck('name')->toArray();
 			return response()->json(compact('user'));
         }
         // default is unauthed.

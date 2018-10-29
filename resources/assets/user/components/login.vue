@@ -82,7 +82,7 @@
                     .then(res => {
                         this.flash(res.data.data.msg, 'success')
                         
-                        axios.get('/api/company')
+                        axios.get('/api/get_companies')
                             .then(res => {
                                 let current_company_id = localStorage.getItem('company_id')
                                 let current_project_id = localStorage.getItem('project_id')
